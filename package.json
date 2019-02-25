@@ -1,0 +1,30 @@
+{
+  "name": "react-rewind",
+  "version": "1.0.0",
+  "description": "\"Time Travel Debugger for React Hooks\"",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier \" src/**/*.{js, jsx, css, json}\"",
+    "lint": "eslint \"scr/**/*.{js,jsx}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reactrewind"
+  },
+  "author": "react-rewind",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.13.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.12.4",
+    "prettier": "^1.16.4"
+  },
+  "dependencies": {
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
+  }
+}
