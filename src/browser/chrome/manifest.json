@@ -1,0 +1,22 @@
+{
+  "name": "React Rewind",
+  "version": "1.0",
+  "description": "Time travel",
+  "manifest_version": 2,
+  "page_action": {
+    "default_popup": "page_action.html"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "<all_urls>",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "web_accessible_resources": [
+    
+  ],
+  "devtools_page": "devtools.html"
+}
