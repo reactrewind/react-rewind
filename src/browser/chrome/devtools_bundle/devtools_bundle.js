@@ -97,9 +97,10 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _container_SplitPane_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../container/SplitPane.jsx */ "./container/SplitPane.jsx");
-/* harmony import */ var _container_Events_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../container/Events.jsx */ "./container/Events.jsx");
-/* harmony import */ var _container_Details_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../container/Details.jsx */ "./container/Details.jsx");
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
+/* harmony import */ var _container_SplitPane_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../container/SplitPane.jsx */ "./container/SplitPane.jsx");
+/* harmony import */ var _container_Events_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../container/Events.jsx */ "./container/Events.jsx");
+/* harmony import */ var _container_Details_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../container/Details.jsx */ "./container/Details.jsx");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -126,12 +127,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n  html {\n    box-sizing: border-box;\n    font-size: 10px;\n    height: 100%;\n    width: 100%;\n  }\n  * *:before, *:after {\n    box-sizing: inherit;\n  }\n  body {\n    padding: 0;\n    margin: 0;\n    font-size: 1.5rem;\n    line-height: 2;\n    height: 100%;\n    width: 100%;\n    background-color: #2A2E3A;\n  }\n"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+
  // containers
 
  // left pane = events, right pane = details
 
 
+ // import from styled components to create global styles
 
+var GlobalStyle = Object(styled_components__WEBPACK_IMPORTED_MODULE_1__["createGlobalStyle"])(_templateObject());
 
 var App =
 /*#__PURE__*/
@@ -258,21 +274,12 @@ function (_Component) {
           payload = _this$state.payload,
           state = _this$state.state,
           data = _this$state.data;
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-        onClick: this.startRecording,
-        type: "submit"
-      }, "Start Recording"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-        onClick: this.stopRecording,
-        type: "submit"
-      }, "Stop Recording"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-        onClick: this.recordingValue,
-        type: "submit"
-      }, "Gimme the value"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_container_SplitPane_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
-        left: react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_container_Events_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(GlobalStyle, null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_container_SplitPane_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        left: react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_container_Events_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
           data: data,
           addAction: this.addActionToView
         }),
-        right: react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_container_Details_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        right: react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_container_Details_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
           action: action,
           id: id,
           payload: payload,
@@ -429,16 +436,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EventCreator; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _styles_Events_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../styles/Events.jsx */ "./styles/Events.jsx");
+
 
 function EventCreator(props) {
   // renders individual action
   var action = props.action,
       id = props.id,
-      addAction = props.addAction;
-  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      addAction = props.addAction,
+      actionTime = props.actionTime;
+  console.log(_styles_Events_jsx__WEBPACK_IMPORTED_MODULE_1__["EventCard"]);
+  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_styles_Events_jsx__WEBPACK_IMPORTED_MODULE_1__["EventCard"], {
     id: id,
     onClick: addAction
-  }, action);
+  }, "\u2630 ", action, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_styles_Events_jsx__WEBPACK_IMPORTED_MODULE_1__["EventTimeDiv"], null, actionTime || '00:00:01'));
 }
 
 /***/ }),
@@ -16713,15 +16724,37 @@ module.exports = function (originalModule) {
 /*!***************************!*\
   !*** ./styles/Events.jsx ***!
   \***************************/
-/*! exports provided: EventsWrapper */
+/*! exports provided: EventsWrapper, EventCard, EventTimeDiv */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventsWrapper", function() { return EventsWrapper; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventCard", function() { return EventCard; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventTimeDiv", function() { return EventTimeDiv; });
 /* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
+function _templateObject3() {
+  var data = _taggedTemplateLiteral(["\n  /* height: 15px; */\n  width: 25%;\n  text-align: center;\n  background-color: #484C54;\n  /* margin-bottom: 2%; */\n  color: #BCBCBB;\n  /* padding: 1%; */\n  border-radius: 5px;\n  /* border: 1px solid black; */\n"]);
+
+  _templateObject3 = function _templateObject3() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 50px;\n  color: white;\n  padding-left: 5%;\n  padding-right: 5%;\n  border-bottom: 1px solid #484C54;\n  cursor: pointer;\n\n  &:hover {\n    color: #4F5A65;\n    border-bottom: 1px solid #4F5A65;\n  }\n"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  margin: 17px 17px;\n"]);
+  var data = _taggedTemplateLiteral(["\n  /* margin: 17px 17px; */\n  /* padding-top: 2%; */\n  /* padding-bottom: 2%; */\n  height: 79%;\n  overflow: auto;\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -16734,7 +16767,10 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 
  // formats the events display
 
-var EventsWrapper = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject());
+var EventsWrapper = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject()); // events actions bar
+
+var EventCard = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject2());
+var EventTimeDiv = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject3());
 
 /***/ }),
 
@@ -16753,7 +16789,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Button", function() { return Button; });
 /* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
 function _templateObject4() {
-  var data = _taggedTemplateLiteral(["\n  /* border-right: 1px solid black; */\n  /* color: ", " */\n  /* background: ", "; */\n  width: 100%;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n\n  a {\n    color: black;\n  }\n\n  :hover {\n    background: lavender;\n    color: white;\n  }\n\n"]);
+  var data = _taggedTemplateLiteral(["\n  /* border-right: 1px solid black; */\n  /* color: ", " */\n  /* background: ", "; */\n  width: 100%;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n\n  a {\n    color: black;\n  }\n\n  :hover {\n    background: #4F5A65;\n    color: white;\n    /* border-bottom: 3px solid black; */\n  }\n\n"]);
 
   _templateObject4 = function _templateObject4() {
     return data;
@@ -16763,7 +16799,7 @@ function _templateObject4() {
 }
 
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  height: 100%;\n  display: inline-grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  align-items: center;\n  justify-content: center;\n\n  a {\n    height: 100%;\n    width: 100%;\n    text-decoration: none;\n    color: black;\n\n    &.active {\n    color: white;\n    background-color: lavender;\n    }\n  }\n\n"]);
+  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  height: 100%;\n  display: inline-grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  align-items: center;\n  justify-content: center;\n\n  a {\n    height: 100%;\n    width: 100%;\n    text-decoration: none;\n    color: white;\n\n    &.active {\n    color: white;\n    background-color: #4F5A65;\n    /* border-bottom: 3px solid white; */\n    }\n  }\n\n"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -16773,7 +16809,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  background-color: lavenderblush;\n  width: 100%;\n  height: 17%;\n  border-bottom: 1px solid black;\n"]);
+  var data = _taggedTemplateLiteral(["\n  background-color: #3C444F;\n  width: 100%;\n  height: 33px;\n  border-bottom: 1px solid #484C54;\n  color: white;\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -16783,7 +16819,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  background-color: lightyellow;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 17%;\n  border-bottom: 1px solid black;\n"]);
+  var data = _taggedTemplateLiteral(["\n  background-color: #3C444F;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 33px;\n  border-bottom: 1px solid #484C54;\n  color: white;\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -16814,17 +16850,28 @@ var Button = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_temp
 /*!******************************!*\
   !*** ./styles/SplitPane.jsx ***!
   \******************************/
-/*! exports provided: PaneWrapper, LeftPane, RightPane */
+/*! exports provided: FullBackground, PaneWrapper, LeftPane, RightPane */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FullBackground", function() { return FullBackground; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PaneWrapper", function() { return PaneWrapper; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LeftPane", function() { return LeftPane; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RightPane", function() { return RightPane; });
 /* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
+function _templateObject4() {
+  var data = _taggedTemplateLiteral(["\n  color: white;\n  background-color: #2A2E3A;\n  height: 100%;\n  width: 57%;\n"]);
+
+  _templateObject4 = function _templateObject4() {
+    return data;
+  };
+
+  return data;
+}
+
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["\n  background-color: honeydew;\n  height: 100%;\n  width: 57%;\n"]);
+  var data = _taggedTemplateLiteral(["\n  background-color: #2A2E3A;\n  border-right: 3px double #484C54;\n  height: 100%;\n  width: 43%;\n"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -16834,7 +16881,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  background-color: Ghostwhite;\n  border-right: 1px solid black;\n  height: 100%;\n  width: 43%;\n"]);
+  var data = _taggedTemplateLiteral(["\n  font-family: \"arial\";\n  font-size: .80em;\n  color: #E8E8F4;\n  background-color: #2A2E3A;\n  height: 100vh;\n  display: flex;\n  justify-content: space-around;\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -16844,7 +16891,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  font-family: Arial;\n  background-color:lightblue;\n  height: 350px;\n  display: flex;\n  justify-content: space-around;\n"]);
+  var data = _taggedTemplateLiteral(["\n  height: 100%;\n  background-color: blue;\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -16856,9 +16903,10 @@ function _templateObject() {
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 
-var PaneWrapper = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject());
-var LeftPane = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject2());
-var RightPane = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject3());
+var FullBackground = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject());
+var PaneWrapper = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject2());
+var LeftPane = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject3());
+var RightPane = styled_components__WEBPACK_IMPORTED_MODULE_0__["default"].div(_templateObject4());
 
 /***/ })
 

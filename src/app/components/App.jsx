@@ -1,4 +1,5 @@
 import React, { useContext, Component } from 'react';
+import { createGlobalStyle } from 'styled-components';
 
 // containers
 import SplitPane from '../container/SplitPane.jsx';
@@ -6,6 +7,29 @@ import SplitPane from '../container/SplitPane.jsx';
 // left pane = events, right pane = details
 import Events from '../container/Events.jsx';
 import Details from '../container/Details.jsx';
+
+// import from styled components to create global styles
+const GlobalStyle = createGlobalStyle`
+  html {
+    box-sizing: border-box;
+    font-size: 10px;
+    height: 100%;
+    width: 100%;
+  }
+  * *:before, *:after {
+    box-sizing: inherit;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 2;
+    height: 100%;
+    width: 100%;
+    background-color: #2A2E3A;
+  }
+`;
+
 
 class App extends Component {
   constructor(props) {
@@ -24,11 +48,10 @@ class App extends Component {
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
       portFromExtension.onMessage.addListener((msg) => {
-        const { data } = this.state;
         const newData = {
           action: msg.action,
           state: msg.state,
-          id: data.length,
+          id: this.state.length,
         };
         this.setState((state) => ({
           data: [...state.data, newData]
@@ -70,30 +93,13 @@ class App extends Component {
   //   }
   // }
 
-  startRecording() {
-    chrome.storage.sync.set({ isAppTurnedOn: true }, () => console.log('turned on application'));
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
-    });
-  }
-
-  stopRecording() {
-    chrome.storage.sync.set({ isAppTurnedOn: false }, () => console.log('turned on application'));
-  }
-
-  recordingValue() {
-    chrome.storage.sync.get(['isAppTurnedOn'], appStatus => console.log('App status: ', appStatus));
-  }
-
   render() {
     const {
       action, id, payload, state, data,
     } = this.state;
     return (
-      <React.Fragment>
-        <button onClick={this.startRecording} type="submit">Start Recording</button>
-        <button onClick={this.stopRecording} type="submit">Stop Recording</button>
-        <button onClick={this.recordingValue} type="submit">Gimme the value</button>
+      <>
+        <GlobalStyle />
         <SplitPane
           left={
             <Events data={data} addAction={this.addActionToView} />
@@ -108,7 +114,7 @@ class App extends Component {
               />
             )}
         />
-      </React.Fragment>
+      </>
     );
   }
 }

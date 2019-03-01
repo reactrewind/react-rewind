@@ -2,22 +2,24 @@ import styled from "styled-components";
 
 // events nav wrapper
 export const EventsNavWrapper = styled.div`
-  background-color: lightyellow;
+  background-color: #3C444F;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 17%;
-  border-bottom: 1px solid black;
+  height: 33px;
+  border-bottom: 1px solid #484C54;
+  color: white;
 `;
 
 
 // details nav wrapper
 export const DetailsNavWrapper = styled.div`
-  background-color: lavenderblush;
+  background-color: #3C444F;
   width: 100%;
-  height: 17%;
-  border-bottom: 1px solid black;
+  height: 33px;
+  border-bottom: 1px solid #484C54;
+  color: white;
 `;
 
 
@@ -34,11 +36,12 @@ export const Buttons = styled.div`
     height: 100%;
     width: 100%;
     text-decoration: none;
-    color: black;
+    color: white;
 
     &.active {
     color: white;
-    background-color: lavender;
+    background-color: #4F5A65;
+    /* border-bottom: 3px solid white; */
     }
   }
 
@@ -60,8 +63,9 @@ export const Button = styled.div`
   }
 
   :hover {
-    background: lavender;
+    background: #4F5A65;
     color: white;
+    /* border-bottom: 3px solid black; */
   }
 
 `;
