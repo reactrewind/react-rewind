@@ -1,4 +1,5 @@
 import React, { useContext, Component } from 'react';
+import { createGlobalStyle } from 'styled-components';
 
 // data
 import data from '../data.jsx'
@@ -9,6 +10,29 @@ import SplitPane from '../container/SplitPane.jsx';
 // left pane = events, right pane = details
 import Events from '../container/Events.jsx';
 import Details from '../container/Details.jsx';
+
+// import from styled components to create global styles
+const GlobalStyle = createGlobalStyle`
+  html {
+    box-sizing: border-box;
+    font-size: 10px;
+    height: 100%;
+    width: 100%;
+  }
+  * *:before, *:after {
+    box-sizing: inherit;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 2;
+    height: 100%;
+    width: 100%;
+    background-color: #2A2E3A;
+  }
+`;
+
 
 class App extends Component {
   constructor(props) {
@@ -71,20 +95,23 @@ class App extends Component {
       action, id, payload, state, data
     } = this.state;
     return (
-      <SplitPane
-        left={
-          <Events data={data} addAction={this.addActionToView} />
-        }
-        right={
-          (
-            <Details
-              action={action}
-              id={id}
-              payload={payload}
-              actionState={state}
-            />
-          )}
-      />
+      <>
+        <GlobalStyle />
+        <SplitPane
+          left={
+            <Events data={data} addAction={this.addActionToView} />
+          }
+          right={
+            (
+              <Details
+                action={action}
+                id={id}
+                payload={payload}
+                actionState={state}
+              />
+            )}
+        />
+      </>
     );
   }
 }
