@@ -11,11 +11,11 @@ class Events extends Component {
   }
 
   render() {
-    const { addAction } = this.props;
+    const { addAction, data } = this.props;
     return (
       <>
         <EventsNav />
-        <EventsDisplay data={this.props.data} addAction={addAction} />
+        <EventsDisplay data={data} addAction={addAction} />
       </>
     );
   }
