@@ -11,6 +11,7 @@ import SplitPane from '../container/SplitPane.jsx';
 import Events from '../container/Events.jsx';
 import Details from '../container/Details.jsx';
 
+// import from styled components to create global styles
 const GlobalStyle = createGlobalStyle`
   html {
     box-sizing: border-box;
@@ -28,6 +29,7 @@ const GlobalStyle = createGlobalStyle`
     line-height: 2;
     height: 100%;
     width: 100%;
+    background-color: #393939;
   }
 `;
 
