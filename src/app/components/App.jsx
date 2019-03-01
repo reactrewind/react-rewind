@@ -29,7 +29,7 @@ const GlobalStyle = createGlobalStyle`
     line-height: 2;
     height: 100%;
     width: 100%;
-    background-color: #393939;
+    background-color: #2A2E3A;
   }
 `;
 
