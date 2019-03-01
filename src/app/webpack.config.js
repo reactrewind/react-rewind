@@ -1,11 +1,11 @@
 var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  mode: 'development',
   entry: './index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index_bundle.js'
+    path: path.resolve(__dirname, '../browser/chrome/devtools_js'),
+    filename: 'devtools_bundle.js'
   },
   devtool: 'source-map',
   module: {
@@ -13,8 +13,5 @@ module.exports = {
       { test: /\.(js|jsx)$/, use: 'babel-loader' },
       { test: /\.css$/, use: [ 'style-loader', 'css-loader' ]}
     ]
-  },
-  plugins: [new HtmlWebpackPlugin({
-    template: './index.html'
-  })]
+  }
 }

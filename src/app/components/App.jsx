@@ -14,16 +14,30 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      data: []
+    };
 
     this.addActionToView = this.addActionToView.bind(this);
     // this.toTheFuture = this.toTheFuture.bind(this);
   }
 
+  componentDidMount() {
+    // adds listener to the effects that are gonna be sent from
+    // our edited useReducer from the 'react' library.
+    chrome.runtime.onConnect.addListener((portFromExtension) => {
+      portFromExtension.onMessage.addListener(msg => {
+        const newData = { action: msg.action, state: msg.state, id: this.state.data.length };
+        const newDataArray = [...this.state.data, newData];
+        this.setState({ data: newDataArray });
+      });
+    });
+  }
+
   // function to select an event from the data
   // and set state with all required info
   addActionToView(e) {
-    const actionToView = data.filter(action => e.target.id === String(action.id));
+    const actionToView = this.state.data.filter(action => e.target.id === String(action.id));
     const {
       action, id, payload, state,
     } = actionToView[0];
@@ -54,12 +68,12 @@ class App extends Component {
 
   render() {
     const {
-      action, id, payload, state,
+      action, id, payload, state, data
     } = this.state;
     return (
       <SplitPane
         left={
-          <Events addAction={this.addActionToView} />
+          <Events data={data} addAction={this.addActionToView} />
         }
         right={
           (
