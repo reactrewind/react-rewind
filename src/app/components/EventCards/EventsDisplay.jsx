@@ -11,14 +11,11 @@ import { EventsWrapper } from '../../styles/Events.jsx';
 import { DataContext } from '../../index.js'
 
 export default function Events(props) {
-  // data context instance created
-  const data = useContext(DataContext);
-
   return (
     <EventsWrapper>
-      {data.map((e, i) => (
+      {props.data.map((e, i) => (
         <EventCreator
-          action={e.action}
+          action={e.action.type}
           key={i}
           id={e.id}
           addAction={props.addAction}
