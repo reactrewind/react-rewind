@@ -169,5 +169,4 @@ const parseAndGenerate = () => {
   generateFile(genReactDom, ast);
 };
 
-// parseAndGenerate();
 module.exports = parseAndGenerate;
