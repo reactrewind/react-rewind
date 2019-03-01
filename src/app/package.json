@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server/server.js",
     "start:dev": "webpack-dev-server --mode development --open --hot",
-    "build": "webpack --mode production"
+    "build": "webpack --watch"
   },
   "babel": {
     "presets": [
@@ -23,6 +23,9 @@
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
     "css-loader": "^2.1.0",
+    "escodegen": "^1.11.1",
+    "esprima": "^4.0.1",
+    "estraverse": "^4.2.0",
     "html-webpack-plugin": "^3.2.0",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",

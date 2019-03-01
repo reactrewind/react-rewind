@@ -15,7 +15,7 @@ class Events extends Component {
     return (
       <>
         <EventsNav />
-        <EventsDisplay addAction={addAction} />
+        <EventsDisplay data={this.props.data} addAction={addAction} />
       </>
     );
   }

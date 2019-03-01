@@ -2,14 +2,14 @@ import React from 'react';
 
 export default function Actions(props) {
   // renders action information
-  const { action, payload } = props;
+  const { action } = props;
   return (
     <>
       action:
-      {action || 'select an event'}
+      {action.type || 'select an event'}
       <br></br>
       payload:
-      {payload || 'select an event'}
+      {action.payload || 'select an event'}
     </>
   );
 }
