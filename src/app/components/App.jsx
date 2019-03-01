@@ -18,19 +18,15 @@ class App extends Component {
       data: []
     };
 
-    this.port = null;
-
     this.addActionToView = this.addActionToView.bind(this);
     // this.toTheFuture = this.toTheFuture.bind(this);
   }
 
   componentDidMount() {
-    // we add the listener to the effects that are gonna be sent from
-    // our edited function on the react-dom library.
-    if (this.port !== null) return;
+    // adds listener to the effects that are gonna be sent from
+    // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
-      this.port = portFromExtension;
-      this.port.onMessage.addListener(msg => {
+      portFromExtension.onMessage.addListener(msg => {
         const newData = { action: msg.action, state: msg.state, id: this.state.data.length };
         const newDataArray = [...this.state.data, newData];
         this.setState({ data: newDataArray });
