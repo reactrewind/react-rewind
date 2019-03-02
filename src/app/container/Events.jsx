@@ -3,6 +3,7 @@ import React, { useContext, useState, Component} from 'react';
 // components
 import EventsNav from '../components/EventCards/EventsNav.jsx';
 import EventsDisplay from '../components/EventCards/EventsDisplay.jsx'
+import TimeTravel from '../components/EventCards/TimeTravel.jsx';
 
 class Events extends Component {
   constructor(props) {
@@ -11,11 +12,17 @@ class Events extends Component {
   }
 
   render() {
-    const { addAction } = this.props;
+    const {
+      addAction,
+      data,
+      toTheFuture,
+      toThePast,
+    } = this.props;
     return (
       <>
         <EventsNav />
-        <EventsDisplay data={this.props.data} addAction={addAction} />
+        <EventsDisplay data={data} addAction={addAction} />
+        <TimeTravel toTheFuture={toTheFuture} toThePast={toThePast} />
       </>
     );
   }

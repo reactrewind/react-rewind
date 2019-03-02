@@ -1,9 +1,6 @@
 import React, { useContext, Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-// data
-import data from '../data.jsx'
-
 // containers
 import SplitPane from '../container/SplitPane.jsx';
 
@@ -39,21 +36,27 @@ class App extends Component {
     super(props);
 
     this.state = {
-      data: []
+      data: [],
     };
 
     this.addActionToView = this.addActionToView.bind(this);
-    // this.toTheFuture = this.toTheFuture.bind(this);
+    this.toTheFuture = this.toTheFuture.bind(this);
+    this.toThePast = this.toThePast.bind(this);
   }
 
   componentDidMount() {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
-      portFromExtension.onMessage.addListener(msg => {
-        const newData = { action: msg.action, state: msg.state, id: this.state.data.length };
-        const newDataArray = [...this.state.data, newData];
-        this.setState({ data: newDataArray });
+      portFromExtension.onMessage.addListener((msg) => {
+        const newData = {
+          action: msg.action,
+          state: msg.state,
+          id: this.state.length,
+        };
+        this.setState((state) => ({
+          data: [...state.data, newData]
+        }));
       });
     });
   }
@@ -61,7 +64,8 @@ class App extends Component {
   // function to select an event from the data
   // and set state with all required info
   addActionToView(e) {
-    const actionToView = this.state.data.filter(action => e.target.id === String(action.id));
+    const { data } = this.state;
+    const actionToView = data.filter(action => e.target.id === String(action.id));
     const {
       action, id, payload, state,
     } = actionToView[0];
@@ -71,36 +75,60 @@ class App extends Component {
   }
 
   // function to travel to the FUTURE
-  // **** not being passed to any children yet
-  //   toTheFuture(e) {
-  //     if (this.state.action) {
-  //       for (let i = 0; i < data.length - 1; i += 1) {
-  //         // clicking next returns next piece of data
-  //         if (data[i].id === this.state.id) {
-  //           const { action, id, payload, state } = data[i + 1];
-  //           this.setState({action, id, payload, state});
-  //         }
-  //         // if we're at the last action stop there
-  //         // don't let user go any further
-  //         if (data[i].id === undefined) {
-  //           const { action, id, payload, state } = data[data.length -1 ];
-  //           this.setState({action, id, payload, state});
-  //         }
-  //     }
-  //   }
-  // }
+  toTheFuture(e) {
+    if (this.state.action) {
+      for (let i = 0; i < data.length - 1; i += 1) {
+        // clicking next returns next piece of data
+        if (data[i].id === this.state.id) {
+          const { action, id, payload, state } = data[i + 1];
+          this.setState({action, id, payload, state});
+        }
+        // if we're at the last action stop there
+        // don't let user go any further
+        if (data[i].id === undefined) {
+          const { action, id, payload, state } = data[data.length -1 ];
+          this.setState({action, id, payload, state});
+        }
+      }
+    }
+  }
+
+  // function to travel to the PAST
+  toThePast(e) {
+    if (this.state.action) {
+      for (let i = data.length - 1; i >= 0; i -= 1) {
+        // clicking next returns next piece of data
+        if (data[i].id === this.state.id) {
+          const { action, id, payload, state } = data[i - 1];
+          this.setState({action, id, payload, state});
+        }
+        // if we're at the last action stop there
+        // don't let user go any further
+        if (this.state.action === undefined) {
+          const { action, id, payload, state } = data[0];
+          this.setState({action, id, payload, state});
+        }
+      }
+    }
+  }
 
   render() {
     const {
-      action, id, payload, state, data
+      action, id, payload, state, data,
     } = this.state;
     return (
       <>
         <GlobalStyle />
         <SplitPane
           left={
-            <Events data={data} addAction={this.addActionToView} />
-          }
+            (
+              <Events
+                data={data} 
+                addAction={this.addActionToView}
+                toTheFuture={this.toTheFuture}
+                toThePast={this.toThePast}
+              />
+            )}
           right={
             (
               <Details
@@ -114,6 +142,6 @@ class App extends Component {
       </>
     );
   }
-}
+  }
 
 export default App;
