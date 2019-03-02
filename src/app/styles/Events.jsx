@@ -2,14 +2,11 @@ import styled from 'styled-components';
 
 // formats the events display
 export const EventsWrapper = styled.div`
-  /* margin: 17px 17px; */
-  /* padding-top: 2%; */
-  /* padding-bottom: 2%; */
-  max-height: 300px;
+  min-height: 100px;
+  max-height: 200px;
   overflow: auto;
+  border-bottom: 1px solid white;
 `;
-
-
 
 // events actions bar
 export const EventCard = styled.div`
@@ -30,15 +27,17 @@ export const EventCard = styled.div`
 `;
 
 export const EventTimeDiv = styled.div`
-  /* height: 15px; */
   width: 25%;
   text-align: center;
   background-color: #484C54;
-  /* margin-bottom: 2%; */
   color: #BCBCBB;
-  /* padding: 1%; */
   border-radius: 5px;
-  /* border: 1px solid black; */
+`;
+
+export const TimeTravelContainer = styled.div`
+  padding-top: 5%;
+  display: flex;
+  justify-content: space-evenly;
 `;
 
 export const TimeTravelContainer = styled.div`
