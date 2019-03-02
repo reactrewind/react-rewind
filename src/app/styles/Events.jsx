@@ -5,7 +5,7 @@ export const EventsWrapper = styled.div`
   /* margin: 17px 17px; */
   /* padding-top: 2%; */
   /* padding-bottom: 2%; */
-  height: 79%;
+  max-height: 300px;
   overflow: auto;
 `;
 
@@ -39,4 +39,11 @@ export const EventTimeDiv = styled.div`
   /* padding: 1%; */
   border-radius: 5px;
   /* border: 1px solid black; */
+`;
+
+export const TimeTravelContainer = styled.div`
+  border-top: 1px solid white;
+  padding-top: 5%;
+  display: flex;
+  justify-content: space-evenly;
 `;

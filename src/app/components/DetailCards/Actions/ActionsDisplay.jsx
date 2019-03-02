@@ -6,10 +6,10 @@ export default function Actions(props) {
   return (
     <>
       action:
-      {action.type || 'select an event'}
+      {(action && action.type) || 'select an event'}
       <br></br>
       payload:
-      {action.payload || 'select an event'}
+      {(action && action.payload) || 'select an event'}
     </>
   );
 }
