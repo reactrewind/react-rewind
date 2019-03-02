@@ -41,6 +41,7 @@ class App extends Component {
       isRecording: true,
     };
 
+    this.port = null;
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
@@ -52,6 +53,8 @@ class App extends Component {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
+      this.port = portFromExtension;
+
       portFromExtension.onMessage.addListener((msg) => {
         const newData = {
           action: msg.action,
@@ -96,41 +99,21 @@ class App extends Component {
 
 
   // function to travel to the FUTURE
-  toTheFuture(e) {
-    if (this.state.action) {
-      for (let i = 0; i < data.length - 1; i += 1) {
-        // clicking next returns next piece of data
-        if (data[i].id === this.state.id) {
-          const { action, id, payload, state } = data[i + 1];
-          this.setState({action, id, payload, state});
-        }
-        // if we're at the last action stop there
-        // don't let user go any further
-        if (data[i].id === undefined) {
-          const { action, id, payload, state } = data[data.length -1 ];
-          this.setState({action, id, payload, state});
-        }
-      }
-    }
+  toTheFuture() {
+    if (!this.port) return console.error('No connection on stored port.');
+    this.port.postMessage({
+      type: 'TIMETRAVEL',
+      direction: 'forward',
+    });
   }
 
   // function to travel to the PAST
-  toThePast(e) {
-    if (this.state.action) {
-      for (let i = data.length - 1; i >= 0; i -= 1) {
-        // clicking next returns next piece of data
-        if (data[i].id === this.state.id) {
-          const { action, id, payload, state } = data[i - 1];
-          this.setState({action, id, payload, state});
-        }
-        // if we're at the last action stop there
-        // don't let user go any further
-        if (this.state.action === undefined) {
-          const { action, id, payload, state } = data[0];
-          this.setState({action, id, payload, state});
-        }
-      }
-    }
+  toThePast() {
+    if (!this.port) return console.error('No connection on stored port.');
+    this.port.postMessage({
+      type: 'TIMETRAVEL',
+      direction: 'backwards',
+    });
   }
 
   render() {
@@ -176,6 +159,6 @@ class App extends Component {
       </>
     );
   }
-  }
+}
 
 export default App;

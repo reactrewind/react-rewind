@@ -2,6 +2,11 @@ const port = chrome.runtime.connect({
   name: 'Injected-Background Connection',
 });
 
+port.onMessage.addListener((msg) => {
+  console.log('Extension got something: ', msg);
+  window.postMessage(msg);
+});
+
 port.onDisconnect.addListener(() => console.log('Disconecting...'));
 
 window.addEventListener('message', (msg) => {
@@ -13,16 +18,6 @@ window.addEventListener('message', (msg) => {
   // send them over to the App anymore.
   chrome.storage.sync.get(['isAppTurnedOn'], (status) => {
     if (!status.isAppTurnedOn) return;
-
-    switch (msg.data.type) {
-      case 'DISPATCH':
-        port.postMessage(msg.data.data);
-        break;
-      case 'EFFECT':
-        console.log('Received effect: ', msg.data);
-        break;
-      default:
-        console.log('default');
-    }
+    if (msg.data.type === 'DISPATCH') port.postMessage(msg.data.data);
   });
 });

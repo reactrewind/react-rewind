@@ -27,5 +27,3 @@ class DoublyLinkedList {
     return this;
   }
 }
-
-const fnArray = [];
