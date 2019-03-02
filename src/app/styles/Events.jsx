@@ -39,3 +39,10 @@ export const TimeTravelContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
 `;
+
+export const TimeTravelContainer = styled.div`
+  border-top: 1px solid white;
+  padding-top: 5%;
+  display: flex;
+  justify-content: space-evenly;
+`;
