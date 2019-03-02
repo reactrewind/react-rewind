@@ -37,11 +37,15 @@ class App extends Component {
 
     this.state = {
       data: [],
+      isPlaying: true,
+      isRecording: true,
     };
 
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
+    this.setIsPlaying = this.setIsPlaying.bind(this);
+    this.setIsRecording = this.setIsRecording.bind(this);
   }
 
   componentDidMount() {
@@ -61,6 +65,22 @@ class App extends Component {
     });
   }
 
+  // functionality to change 'play' button to 'stop'
+  setIsPlaying() {
+    console.log('setIsPlaying:', this.state.isPlaying)
+    let { isPlaying } = this.state;
+    isPlaying = !isPlaying;
+    this.setState({ isPlaying });
+  }
+
+  // functionality to change 'record' button to 'pause'
+  setIsRecording() {
+    console.log('setIsRecording:', this.state.isRecording)
+    this.setState(state => ({
+      isRecording: !state.isRecording,
+    }));
+  }
+
   // function to select an event from the data
   // and set state with all required info
   addActionToView(e) {
@@ -73,6 +93,7 @@ class App extends Component {
       action, id, payload, state,
     });
   }
+
 
   // function to travel to the FUTURE
   toTheFuture(e) {
@@ -114,8 +135,17 @@ class App extends Component {
 
   render() {
     const {
-      action, id, payload, state, data,
+      action,
+      id,
+      payload,
+      state,
+      data,
+      setIsPlaying,
+      isPlaying,
+      setIsRecording,
+      isRecording,
     } = this.state;
+
     return (
       <>
         <GlobalStyle />
@@ -127,6 +157,10 @@ class App extends Component {
                 addAction={this.addActionToView}
                 toTheFuture={this.toTheFuture}
                 toThePast={this.toThePast}
+                isPlaying={isPlaying}
+                isRecording={isRecording}
+                setIsPlaying={this.setIsPlaying}
+                setIsRecording={this.setIsRecording}
               />
             )}
           right={
@@ -142,6 +176,6 @@ class App extends Component {
       </>
     );
   }
-  }
+}
 
 export default App;
