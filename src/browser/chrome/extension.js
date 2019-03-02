@@ -17,7 +17,8 @@ window.addEventListener('message', (msg) => {
   // though our injected scripts keep posting messages, we don't want to
   // send them over to the App anymore.
   chrome.storage.sync.get(['isAppTurnedOn'], (status) => {
-    if (!status.isAppTurnedOn) return;
+    // if (!status.isAppTurnedOn) return;
+    console.log('Extension got msg: ', msg);
     if (msg.data.type === 'DISPATCH') port.postMessage(msg.data.data);
   });
 });

@@ -56,10 +56,11 @@ class App extends Component {
       this.port = portFromExtension;
 
       portFromExtension.onMessage.addListener((msg) => {
+        console.log('new msg : ', msg);
         const newData = {
           action: msg.action,
           state: msg.state,
-          id: this.state.length,
+          id: this.state.data.length,
         };
         this.setState((state) => ({
           data: [...state.data, newData]
@@ -70,7 +71,6 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    console.log('setIsPlaying:', this.state.isPlaying)
     let { isPlaying } = this.state;
     isPlaying = !isPlaying;
     this.setState({ isPlaying });
@@ -78,7 +78,6 @@ class App extends Component {
 
   // functionality to change 'record' button to 'pause'
   setIsRecording() {
-    console.log('setIsRecording:', this.state.isRecording)
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
@@ -136,7 +135,7 @@ class App extends Component {
           left={
             (
               <Events
-                data={data} 
+                data={data}
                 addAction={this.addActionToView}
                 toTheFuture={this.toTheFuture}
                 toThePast={this.toThePast}
