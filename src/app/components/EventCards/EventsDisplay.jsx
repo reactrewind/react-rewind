@@ -2,13 +2,9 @@ import React, { useContext, useState } from 'react';
 
 // components import
 import EventCreator from './EventCreator.jsx';
-import TimeTravel from './TimeTravel.jsx';
 
 // styled components import
 import { EventsWrapper } from '../../styles/Events.jsx';
-
-// data context import
-import { DataContext } from '../../index.js'
 
 export default function Events(props) {
   return (
@@ -22,7 +18,6 @@ export default function Events(props) {
         />
       ))}
       {/* time travel doesn't work yet */}
-      <TimeTravel />
     </EventsWrapper>
   );
 }
