@@ -56,7 +56,6 @@ class App extends Component {
       this.port = portFromExtension;
 
       portFromExtension.onMessage.addListener((msg) => {
-        console.log('new msg : ', msg);
         const newData = {
           action: msg.action,
           state: msg.state,

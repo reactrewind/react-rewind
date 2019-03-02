@@ -3,7 +3,6 @@ const port = chrome.runtime.connect({
 });
 
 port.onMessage.addListener((msg) => {
-  console.log('Extension got something: ', msg);
   window.postMessage(msg);
 });
 
