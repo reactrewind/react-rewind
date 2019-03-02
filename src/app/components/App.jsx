@@ -87,10 +87,10 @@ class App extends Component {
     const { data } = this.state;
     const actionToView = data.filter(action => e.target.id === String(action.id));
     const {
-      action, id, payload, state,
+      action, id, state,
     } = actionToView[0];
     this.setState({
-      action, id, payload, state,
+      action, id, state,
     });
   }
 
