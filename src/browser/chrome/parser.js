@@ -2,27 +2,8 @@
 const esprima = require('esprima');
 const estraverse = require('estraverse');
 const escodegen = require('escodegen');
-const path = require('path');
 const _ = require('lodash');
-const fs = require('fs');
-const fetch = require('isomorphic-fetch');
 
-
-// react files
-const useReducerfile = '/node_modules/react/cjs/react.development.js';
-const commitAllHostEffectsfile = '/node_modules/react-dom/cjs/react-dom.development.js';
-
-// generated file names
-const genReactDev = 'generatedReact.development.js';
-const genReactDom = 'generatedReact-dom.development.js';
-
-// convert file to string and parse
-function parseFile(file) {
-  const dir = path.join(__dirname, file);
-  const fileString = fs.readFile(dir, { encoding: 'utf-8' });
-  const ast = esprima.parseModule(fileString);
-  return ast;
-}
 // declare functions to insert
 // TODO: Un-comment timeTravelTracker
 function useReducerReplacement() {
@@ -141,57 +122,34 @@ function commitAllHostEffectsReplacement() {
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
-  // let completed = false;
   estraverse.replace(ast, {
     enter(node) {
       if (node.type === 'FunctionDeclaration') {
         if (node.id.name === functionName) {
-          console.log('found', functionName);
           node.body = replacementNode.body[0].body;
-          // completed = true;
         }
       }
     },
   });
-  // return completed;
 }
 
-function generateFile(filename, ast) {
-  const code = escodegen.generate(ast);
-  fs.writeFileSync(filename, code, (err) => {
-    if (err) throw new Error(err.message);
-  });
-}
-
-const parseAndGenerate = () => {
-  // first file
-  // let ast = parseFile(useReducerfile);
-  fetch('https://unpkg.com/react-dom@16/umd/react-dom.development.js')
-    .then(r => r.text())
-    .then((codeString) => {
-      console.log(codeString);
-      if (codeString.search('react')) {
-        console.log('react result', codeString.search('react'));
-        const ast = esprima.parseModule(codeString);
-        if (codeString.search('react-dom')) {
-          console.log('react-DOM result', codeString.search('react-dom'));
-          const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-          traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
-        } else {
-          const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-          traverseTree(injectableUseReducer, 'useReducer', ast);
-        }
-        const code = escodegen.generate(ast);
-        // console.log(code);
-        // return code;
-        fs.writeFileSync('dom.js', code, (err) => {
-          if (err) throw new Error(err.message);
-        });
-      }
-      return -1;
-    });
+const parseAndGenerate = (codeString) => {
+  if (codeString.search('react')) {
+    const ast = esprima.parseModule(codeString);
+    // parse react-dom code
+    if (codeString.search('react-dom')) {
+      const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+      traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
+    } else {
+      // parse react code
+      const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+      traverseTree(injectableUseReducer, 'useReducer', ast);
+    }
+    const code = escodegen.generate(ast);
+    return code;
+  }
+  return -1;
 };
-parseAndGenerate();
 
 // }
 module.exports = parseAndGenerate;
