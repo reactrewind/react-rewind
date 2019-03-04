@@ -13,6 +13,7 @@ timeTravelScript.src = chrome.runtime.getURL('scripts/time_travel.js');
 linkedListScript.onload = timeTravelScript.onload = function removeScriptTag() {
   this.remove();
 };
+<<<<<<< HEAD
 
 console.log('im all ears');
 chrome.runtime.onMessage.addListener((msg) => {
@@ -24,3 +25,5 @@ chrome.runtime.onMessage.addListener((msg) => {
     this.remove();
   };
 });
+=======
+>>>>>>> e4fea21ec8444346b507bf71673dc8066c6de725

@@ -3,8 +3,11 @@ const port = chrome.runtime.connect({
 });
 
 port.onMessage.addListener((msg) => {
+<<<<<<< HEAD
   // This is where we get messages from the App component.
   // We get an object { type: 'TIMETRAVEL', direction: 'forward' }
+=======
+>>>>>>> e4fea21ec8444346b507bf71673dc8066c6de725
   window.postMessage(msg);
 });
 
