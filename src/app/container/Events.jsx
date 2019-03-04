@@ -13,6 +13,7 @@ class Events extends Component {
 
   render() {
     const {
+      activeEventId,
       addAction,
       data,
       toTheFuture,
@@ -21,6 +22,7 @@ class Events extends Component {
       isPlaying,
       setIsRecording,
       isRecording,
+      isPlayingIndex,
     } = this.props;
     return (
       <>
@@ -28,6 +30,7 @@ class Events extends Component {
         <EventsDisplay
           data={data}
           addAction={addAction}
+          activeEventId={activeEventId}
         />
         <TimeTravel
           toTheFuture={toTheFuture}
