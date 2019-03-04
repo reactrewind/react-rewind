@@ -37,16 +37,17 @@ class App extends Component {
 
     this.state = {
       data: [],
-      isPlaying: true,
-      isRecording: true,
+      isPlaying: false,
+      isRecording: false,
     };
-
     this.port = null;
+    this.isPlayingIndex = 0;
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
     this.setIsPlaying = this.setIsPlaying.bind(this);
     this.setIsRecording = this.setIsRecording.bind(this);
+    this.actionInPlay = this.actionInPlay.bind(this);
   }
 
   componentDidMount() {
@@ -70,16 +71,41 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
+    if (this.isPlayingIndex === this.state.data.length - 1) {
+      this.isPlayingIndex = 0;
+    }
+
     let { isPlaying } = this.state;
     isPlaying = !isPlaying;
     this.setState({ isPlaying });
+
+    if (isPlaying) {
+      this.actionInPlay();
+    }
   }
 
   // functionality to change 'record' button to 'pause'
   setIsRecording() {
+    console.log('setIsRecording:', this.state.isRecording)
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
+  }
+
+  actionInPlay() {
+    this.isPlayingIndex++;
+
+    const { id, action, state } = this.state.data[this.isPlayingIndex];
+    setTimeout(() => {
+      this.setState((prev, props) => {
+        return { ...prev, id, action, state }
+      });
+      if (this.state.isPlaying && this.isPlayingIndex < this.state.data.length - 1) {
+        this.actionInPlay();
+      } else {
+        this.setState({ isPlaying: false });
+      }
+    }, 1000);
   }
 
   // function to select an event from the data
@@ -88,10 +114,10 @@ class App extends Component {
     const { data } = this.state;
     const actionToView = data.filter(action => e.target.id === String(action.id));
     const {
-      action, id, payload, state,
+      action, id, state,
     } = actionToView[0];
     this.setState({
-      action, id, payload, state,
+      action, id, state,
     });
   }
 
@@ -118,7 +144,6 @@ class App extends Component {
     const {
       action,
       id,
-      payload,
       state,
       data,
       setIsPlaying,
@@ -134,7 +159,7 @@ class App extends Component {
           left={
             (
               <Events
-                data={data}
+                data={data} 
                 addAction={this.addActionToView}
                 toTheFuture={this.toTheFuture}
                 toThePast={this.toThePast}
@@ -142,6 +167,7 @@ class App extends Component {
                 isRecording={isRecording}
                 setIsPlaying={this.setIsPlaying}
                 setIsRecording={this.setIsRecording}
+                activeEventId={id}
               />
             )}
           right={
@@ -149,7 +175,6 @@ class App extends Component {
               <Details
                 action={action}
                 id={id}
-                payload={payload}
                 actionState={state}
               />
             )}

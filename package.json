@@ -20,8 +20,12 @@
     "eslint-plugin-react": "^7.12.4"
   },
   "dependencies": {
+    "escodegen": "^1.11.1",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
+    "esprima": "^4.0.1",
+    "estraverse": "^4.2.0",
+    "lodash": "^4.17.11",
     "react": "^16.8.1",
     "react-dom": "^16.8.1"
   }

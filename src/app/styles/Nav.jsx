@@ -41,7 +41,7 @@ export const Buttons = styled.div`
     &.active {
     color: white;
     background-color: #4F5A65;
-    /* border-bottom: 3px solid white; */
+    /* border-bottom: 3px solid hotpink; */
     }
   }
 
