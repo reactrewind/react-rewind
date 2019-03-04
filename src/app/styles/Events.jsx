@@ -10,6 +10,7 @@ export const EventsWrapper = styled.div`
 
 // events actions bar
 export const EventCard = styled.div`
+  background-color: ${props => props.selectedEvent === 'false' ? 'none' : "#484C54"};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,16 +22,18 @@ export const EventCard = styled.div`
   cursor: pointer;
 
   &:hover {
-    color: #4F5A65;
+    color: ${props => props.selectedEvent === 'false' ? '#4F5A65' : "white"};
     border-bottom: 1px solid #4F5A65;
   }
 `;
 
+
+
 export const EventTimeDiv = styled.div`
   width: 25%;
   text-align: center;
-  background-color: #484C54;
-  color: #BCBCBB;
+  background-color: ${props => props.selectedEvent === 'false' ? '#484C54' : "#3C444F"};
+  color: ${props => props.selectedEvent === 'false' ? 'white' : "white"};
   border-radius: 5px;
 `;
 

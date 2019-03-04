@@ -17,8 +17,8 @@ export default function TimeTavel(props) {
   return (
     <>
       <TimeTravelContainer>
-        <EventTimeDiv onClick={setIsRecording}>{isRecording ? 'RECORD' : 'PAUSE'}</EventTimeDiv>
-        <EventTimeDiv onClick={setIsPlaying}>{isPlaying ? 'PLAY' : 'STOP' }</EventTimeDiv>
+        <EventTimeDiv onClick={setIsRecording}>{isRecording ? 'PAUSE' : 'RECORD'}</EventTimeDiv>
+        <EventTimeDiv onClick={setIsPlaying}>{isPlaying ? 'STOP' : 'PLAY' }</EventTimeDiv>
       </TimeTravelContainer>
       <TimeTravelContainer>
         <EventTimeDiv onClick={toThePast}>PREVIOUS</EventTimeDiv>
