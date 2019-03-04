@@ -40,7 +40,7 @@ class App extends Component {
       isPlaying: false,
       isRecording: false,
     };
-
+    this.port = null;
     this.isPlayingIndex = 0;
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
@@ -71,7 +71,7 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.isPlayingIndex === 8) {
+    if (this.isPlayingIndex === this.state.data.length - 1) {
       this.isPlayingIndex = 0;
     }
 
