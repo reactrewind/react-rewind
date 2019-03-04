@@ -137,7 +137,7 @@ const parseAndGenerate = (codeString) => {
   if (codeString.search('react')) {
     const ast = esprima.parseModule(codeString);
     // parse react-dom code
-    if (codeString.search('react-dom')) {
+    if (codeString.search('react-dom') !== -1) {
       const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
       traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
     } else {
