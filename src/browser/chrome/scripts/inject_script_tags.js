@@ -13,3 +13,15 @@ timeTravelScript.src = chrome.runtime.getURL('scripts/time_travel.js');
 linkedListScript.onload = timeTravelScript.onload = function removeScriptTag() {
   this.remove();
 };
+
+chrome.runtime.onMessage.addListener((msg) => {
+  if (!msg.hasOwnProperty('codeString')) return;
+
+  console.log('Content got some code to inject into the page.');
+  const script = document.createElement('script');
+  script.innerHTML = msg.codeString;
+  (document.head || document.documentElement).appendChild(script);
+  script.onload = function removeScriptTag() {
+    this.remove();
+  };
+});
