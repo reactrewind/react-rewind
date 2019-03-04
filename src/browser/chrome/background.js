@@ -20,23 +20,26 @@ chrome.runtime.onMessage.addListener((msg) => {
   }
 });
 
-// chrome.webRequest.onBeforeRequest.addListener(
-//   (request) => {
-//     if (request.type === 'script' && !request.url.startsWith('chrome')) {
-//       fetch(request.url)
-//         .then(r => r.text())
-//         .then((codeString) => {
-//           const editedCode = generateCode(codeString);
-//           if (!editedCode) return { redirectUrl: request.url };
+chrome.webRequest.onBeforeRequest.addListener(
+  (request) => {
+    if (request.type === 'script' && !request.url.startsWith('chrome')) {
+      console.log('intercepting one request...');
+      fetch(request.url)
+        .then(r => r.text())
+        .then((codeString) => {
+          const editedCode = parseAndGenerate(codeString);
+          if (editedCode === -1) return { redirectUrl: request.url };
 
-//           sendMessageToContent(editedCode);
-//           return { redirectUrl: 'javascript:' };
-//         });
-//     }
-//   },
-//   { urls: ['<all_urls>'] },
-//   ['blocking'],
-// );
+          console.log('found 1;');
+          sendMessageToContent(codeString);
+          return { redirectUrl: 'javascript:' };
+        });
+      return { redirectUrl: 'javascript:' };
+    }
+  },
+  { urls: ['<all_urls>'] },
+  ['blocking'],
+);
 
 function sendMessageToContent(codeString) {
   console.log('sending the info to content...');
@@ -44,21 +47,3 @@ function sendMessageToContent(codeString) {
     chrome.tabs.sendMessage(tabs[0].id, { codeString });
   });
 }
-chrome.webRequest.onBeforeRequest.addListener(
-  (request) => {
-    if (request.type === 'script' && !request.url.startsWith('chrome')) {
-      console.log('redirecting... ORIGINAL: ', request);
-      fetch(request.url)
-        .then(r => r.text())
-        .then((codeString) => {
-          const editedCode = parseAndGenerate(codeString);
-          if (!editedCode) return { redirectUrl: request.url };
-          //TODO: Define sendMessage and redirectURL
-          // sendMessageToContent(editedCode);
-          // return { redirectUrl: 'javascript:' };
-        });
-    }
-  },
-  { urls: ['<all_urls>'] },
-  ['blocking'],
-);

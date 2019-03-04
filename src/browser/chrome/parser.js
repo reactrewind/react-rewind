@@ -3,6 +3,7 @@ const esprima = require('esprima');
 const estraverse = require('estraverse');
 const escodegen = require('escodegen');
 const _ = require('lodash');
+const fs = require('fs');
 
 // declare functions to insert
 // TODO: Un-comment timeTravelTracker
@@ -11,6 +12,7 @@ function useReducerReplacement() {
   function reducerWithTracker(state, action) {
     const newState = reducer(state, action);
     //  timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
+    console.log('Posting message. Parser worked!');
     window.postMessage({
       type: 'DISPATCH',
       data: {
@@ -134,22 +136,23 @@ function traverseTree(replacementNode, functionName, ast) {
 }
 
 const parseAndGenerate = (codeString) => {
-  if (codeString.search('react')) {
+  if (codeString.search('react') !== -1) {
     const ast = esprima.parseModule(codeString);
     // parse react-dom code
-    if (codeString.search('react-dom') !== -1) {
-      const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-      traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
-    } else {
-      // parse react code
-      const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-      traverseTree(injectableUseReducer, 'useReducer', ast);
-    }
+    // if (codeString.search('react-dom') !== -1) {
+    //   const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+    //   traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
+    // } else {
+    //   // parse react code
+    //   const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+    //   traverseTree(injectableUseReducer, 'useReducer', ast);
+    // }
+    const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+    traverseTree(injectableUseReducer, 'useReducer', ast);
     const code = escodegen.generate(ast);
     return code;
   }
   return -1;
 };
 
-// }
 module.exports = parseAndGenerate;
