@@ -18,15 +18,27 @@ chrome.runtime.onMessage.addListener((msg) => {
   }
 });
 
-// let shouldRedirect = true;
 // chrome.webRequest.onBeforeRequest.addListener(
-//   function(details) {
-//     if (details.type === 'script' && shouldRedirect) {
-//       console.log('redirecting... ORIGINAL: ', details);
-//       shouldRedirect = false;
-//       return { redirectUrl: chrome.extension.getURL('hack.js') };
+//   (request) => {
+//     if (request.type === 'script' && !request.url.startsWith('chrome')) {
+//       fetch(request.url)
+//         .then(r => r.text())
+//         .then((codeString) => {
+//           const editedCode = generateCode(codeString);
+//           if (!editedCode) return { redirectUrl: request.url };
+
+//           sendMessageToContent(editedCode);
+//           return { redirectUrl: 'javascript:' };
+//         });
 //     }
 //   },
-//   { urls: ["<all_urls>"] },
-//   ["blocking"]
+//   { urls: ['<all_urls>'] },
+//   ['blocking'],
 // );
+
+function sendMessageToContent(codeString) {
+  console.log('sending the info to content...');
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { codeString });
+  });
+}
