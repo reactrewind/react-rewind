@@ -7,16 +7,25 @@
     "default_popup": "page_action.html"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["bundle.js"]
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>", "http://*/*", "https://*/*"],
+      "js": ["scripts/inject_script_tags.js"],
+      "run_at":"document_start"
+    }
+  ],
   "permissions": [
     "<all_urls>",
     "tabs",
+    "storage",
     "webRequest",
     "webRequestBlocking"
   ],
   "web_accessible_resources": [
-    
+    "scripts/linked_list.js",
+    "scripts/time_travel.js"
   ],
   "devtools_page": "devtools.html"
 }

@@ -2,40 +2,43 @@ import styled from 'styled-components';
 
 // formats the events display
 export const EventsWrapper = styled.div`
-  /* margin: 17px 17px; */
-  /* padding-top: 2%; */
-  /* padding-bottom: 2%; */
-  height: 79%;
+  min-height: 100px;
+  max-height: 200px;
   overflow: auto;
+  border-bottom: 1px solid white;
 `;
-
-
 
 // events actions bar
 export const EventCard = styled.div`
+  background-color: ${props => props.selectedEvent === 'false' ? 'none' : "#484C54"};
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 50px;
-  color: black;
+  color: white;
   padding-left: 5%;
   padding-right: 5%;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #484C54;
   cursor: pointer;
 
   &:hover {
-    color: white;
-    border-bottom: 1px solid blue;
+    color: ${props => props.selectedEvent === 'false' ? '#4F5A65' : "white"};
+    border-bottom: 1px solid #4F5A65;
   }
 `;
 
+
+
 export const EventTimeDiv = styled.div`
-  height: 15px;
   width: 25%;
   text-align: center;
-  /* background-color: black; */
-  color: black;
-  padding: 1%;
-  border-radius: 25px;
-  border: 1px solid black;
+  background-color: ${props => props.selectedEvent === 'false' ? '#484C54' : "#3C444F"};
+  color: ${props => props.selectedEvent === 'false' ? 'white' : "white"};
+  border-radius: 5px;
+`;
+
+export const TimeTravelContainer = styled.div`
+  padding-top: 5%;
+  display: flex;
+  justify-content: space-evenly;
 `;

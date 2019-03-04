@@ -1,9 +1,6 @@
 import React, { useContext, Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-// data
-import data from '../data.jsx'
-
 // containers
 import SplitPane from '../container/SplitPane.jsx';
 
@@ -11,6 +8,7 @@ import SplitPane from '../container/SplitPane.jsx';
 import Events from '../container/Events.jsx';
 import Details from '../container/Details.jsx';
 
+// import from styled components to create global styles
 const GlobalStyle = createGlobalStyle`
   html {
     box-sizing: border-box;
@@ -28,6 +26,7 @@ const GlobalStyle = createGlobalStyle`
     line-height: 2;
     height: 100%;
     width: 100%;
+    background-color: #2A2E3A;
   }
 `;
 
@@ -37,74 +36,145 @@ class App extends Component {
     super(props);
 
     this.state = {
-      data: []
+      data: [],
+      isPlaying: false,
+      isRecording: false,
     };
-
+    this.port = null;
+    this.isPlayingIndex = 0;
     this.addActionToView = this.addActionToView.bind(this);
-    // this.toTheFuture = this.toTheFuture.bind(this);
+    this.toTheFuture = this.toTheFuture.bind(this);
+    this.toThePast = this.toThePast.bind(this);
+    this.setIsPlaying = this.setIsPlaying.bind(this);
+    this.setIsRecording = this.setIsRecording.bind(this);
+    this.actionInPlay = this.actionInPlay.bind(this);
   }
 
   componentDidMount() {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
-      portFromExtension.onMessage.addListener(msg => {
-        const newData = { action: msg.action, state: msg.state, id: this.state.data.length };
-        const newDataArray = [...this.state.data, newData];
-        this.setState({ data: newDataArray });
+      this.port = portFromExtension;
+
+      portFromExtension.onMessage.addListener((msg) => {
+        const newData = {
+          action: msg.action,
+          state: msg.state,
+          id: this.state.data.length,
+        };
+        this.setState((state) => ({
+          data: [...state.data, newData]
+        }));
       });
     });
+  }
+
+  // functionality to change 'play' button to 'stop'
+  setIsPlaying() {
+    if (this.isPlayingIndex === this.state.data.length - 1) {
+      this.isPlayingIndex = 0;
+    }
+
+    let { isPlaying } = this.state;
+    isPlaying = !isPlaying;
+    this.setState({ isPlaying });
+
+    if (isPlaying) {
+      this.actionInPlay();
+    }
+  }
+
+  // functionality to change 'record' button to 'pause'
+  setIsRecording() {
+    console.log('setIsRecording:', this.state.isRecording)
+    this.setState(state => ({
+      isRecording: !state.isRecording,
+    }));
+  }
+
+  actionInPlay() {
+    this.isPlayingIndex++;
+
+    const { id, action, state } = this.state.data[this.isPlayingIndex];
+    setTimeout(() => {
+      this.setState((prev, props) => {
+        return { ...prev, id, action, state }
+      });
+      if (this.state.isPlaying && this.isPlayingIndex < this.state.data.length - 1) {
+        this.actionInPlay();
+      } else {
+        this.setState({ isPlaying: false });
+      }
+    }, 1000);
   }
 
   // function to select an event from the data
   // and set state with all required info
   addActionToView(e) {
-    const actionToView = this.state.data.filter(action => e.target.id === String(action.id));
+    const { data } = this.state;
+    const actionToView = data.filter(action => e.target.id === String(action.id));
     const {
-      action, id, payload, state,
+      action, id, state,
     } = actionToView[0];
     this.setState({
-      action, id, payload, state,
+      action, id, state,
     });
   }
 
+
   // function to travel to the FUTURE
-  // **** not being passed to any children yet
-  //   toTheFuture(e) {
-  //     if (this.state.action) {
-  //       for (let i = 0; i < data.length - 1; i += 1) {
-  //         // clicking next returns next piece of data
-  //         if (data[i].id === this.state.id) {
-  //           const { action, id, payload, state } = data[i + 1];
-  //           this.setState({action, id, payload, state});
-  //         }
-  //         // if we're at the last action stop there
-  //         // don't let user go any further
-  //         if (data[i].id === undefined) {
-  //           const { action, id, payload, state } = data[data.length -1 ];
-  //           this.setState({action, id, payload, state});
-  //         }
-  //     }
-  //   }
-  // }
+  toTheFuture() {
+    if (!this.port) return console.error('No connection on stored port.');
+    this.port.postMessage({
+      type: 'TIMETRAVEL',
+      direction: 'forward',
+    });
+  }
+
+  // function to travel to the PAST
+  toThePast() {
+    if (!this.port) return console.error('No connection on stored port.');
+    this.port.postMessage({
+      type: 'TIMETRAVEL',
+      direction: 'backwards',
+    });
+  }
 
   render() {
     const {
-      action, id, payload, state, data
+      action,
+      id,
+      state,
+      data,
+      setIsPlaying,
+      isPlaying,
+      setIsRecording,
+      isRecording,
     } = this.state;
+
     return (
       <>
         <GlobalStyle />
         <SplitPane
           left={
-            <Events data={data} addAction={this.addActionToView} />
-          }
+            (
+              <Events
+                data={data} 
+                addAction={this.addActionToView}
+                toTheFuture={this.toTheFuture}
+                toThePast={this.toThePast}
+                isPlaying={isPlaying}
+                isRecording={isRecording}
+                setIsPlaying={this.setIsPlaying}
+                setIsRecording={this.setIsRecording}
+                activeEventId={id}
+              />
+            )}
           right={
             (
               <Details
                 action={action}
                 id={id}
-                payload={payload}
                 actionState={state}
               />
             )}
