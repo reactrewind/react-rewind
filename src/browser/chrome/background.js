@@ -1,3 +1,5 @@
+const parseAndGenerate = require('./parser');
+
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
 
@@ -18,15 +20,21 @@ chrome.runtime.onMessage.addListener((msg) => {
   }
 });
 
-// let shouldRedirect = true;
-// chrome.webRequest.onBeforeRequest.addListener(
-//   function(details) {
-//     if (details.type === 'script' && shouldRedirect) {
-//       console.log('redirecting... ORIGINAL: ', details);
-//       shouldRedirect = false;
-//       return { redirectUrl: chrome.extension.getURL('hack.js') };
-//     }
-//   },
-//   { urls: ["<all_urls>"] },
-//   ["blocking"]
-// );
+chrome.webRequest.onBeforeRequest.addListener(
+  (request) => {
+    if (request.type === 'script' && !request.url.startsWith('chrome')) {
+      console.log('redirecting... ORIGINAL: ', request);
+      fetch(request.url)
+        .then(r => r.text())
+        .then((codeString) => {
+          const editedCode = parseAndGenerate(codeString);
+          if (!editedCode) return { redirectUrl: request.url };
+          //TODO: Define sendMessage and redirectURL
+          // sendMessageToContent(editedCode);
+          // return { redirectUrl: 'javascript:' };
+        });
+    }
+  },
+  { urls: ['<all_urls>'] },
+  ['blocking'],
+);
