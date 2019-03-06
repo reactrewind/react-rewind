@@ -18,11 +18,6 @@ class Events extends Component {
       data,
       toTheFuture,
       toThePast,
-      setIsPlaying,
-      isPlaying,
-      setIsRecording,
-      isRecording,
-      isPlayingIndex,
     } = this.props;
     return (
       <>
@@ -35,10 +30,6 @@ class Events extends Component {
         <TimeTravel
           toTheFuture={toTheFuture}
           toThePast={toThePast}
-          setIsRecording={setIsRecording}
-          isRecording={isRecording}
-          setIsPlaying={setIsPlaying}
-          isPlaying={isPlaying}
         />
       </>
     );
