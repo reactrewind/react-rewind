@@ -8,15 +8,10 @@ import { Buttons, Button, DetailsNavWrapper, Ul } from '../../styles/Nav.jsx';
 
 export default function RightNav(props) {
   return (
-    //make this nav bar with react router
-    //sync it so each active link displays appropriate div
-    //with info
-
-    //style pages so inputted information is styled correctly
     <>
       <DetailsNavWrapper>
         <Buttons>
-          <NavLink activeClassName='active' to='/actions'>
+          <NavLink activeClassName='active' to='/'>
             <Button>actions</Button>
           </NavLink>
           <NavLink activeClassName='active' to='/effects'>
@@ -28,5 +23,5 @@ export default function RightNav(props) {
         </Buttons>
       </DetailsNavWrapper>
     </>
-  )
+  );
 }

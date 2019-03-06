@@ -1,8 +1,12 @@
 import React, { useContext, Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
+// data
+import data from '../data.jsx'
+
 // containers
 import SplitPane from '../container/SplitPane.jsx';
+import TimeSlider from '../container/TimeSlider.jsx';
 
 // left pane = events, right pane = details
 import Events from '../container/Events.jsx';
@@ -30,7 +34,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -39,15 +42,19 @@ class App extends Component {
       data: [],
       isPlaying: false,
       isRecording: false,
+      isSearching: false,
+      isPlayingIndex: 0,
     };
+
     this.port = null;
-    this.isPlayingIndex = 0;
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
     this.setIsPlaying = this.setIsPlaying.bind(this);
     this.setIsRecording = this.setIsRecording.bind(this);
     this.actionInPlay = this.actionInPlay.bind(this);
+    this.handleBarChange = this.handleBarChange.bind(this);
+    this.searchChange = this.searchChange.bind(this);
   }
 
   componentDidMount() {
@@ -71,10 +78,11 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.isPlayingIndex === this.state.data.length - 1) {
-      this.isPlayingIndex = 0;
+    if (this.state.isPlayingIndex === this.state.data.length - 1) {
+      this.state.isPlayingIndex = 0;
     }
 
+    console.log('isplaying')
     let { isPlaying } = this.state;
     isPlaying = !isPlaying;
     this.setState({ isPlaying });
@@ -121,6 +129,25 @@ class App extends Component {
     });
   }
 
+  // filter search bar results
+  // *** NOT FINISHED ***
+  searchChange(e) {
+    const { data } = this.state;
+    console.log(data);
+  }
+
+  // time travel bar change
+  handleBarChange(e) {
+    const { data } = this.state;
+    const { id, action, state } = data[e.target.value];
+
+    this.setState({
+      id,
+      action,
+      state,
+      isPlayingIndex: e.target.value,
+    });
+  }
 
   // function to travel to the FUTURE
   toTheFuture() {
@@ -141,6 +168,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.state.isPlayingIndex);
     const {
       action,
       id,
@@ -163,10 +191,6 @@ class App extends Component {
                 addAction={this.addActionToView}
                 toTheFuture={this.toTheFuture}
                 toThePast={this.toThePast}
-                isPlaying={isPlaying}
-                isRecording={isRecording}
-                setIsPlaying={this.setIsPlaying}
-                setIsRecording={this.setIsRecording}
                 activeEventId={id}
               />
             )}
@@ -178,6 +202,17 @@ class App extends Component {
                 actionState={state}
               />
             )}
+        />
+        <TimeSlider
+          data={data}
+          toTheFuture={this.toTheFuture}
+          toThePast={this.toThePast}
+          isPlaying={isPlaying}
+          isPlayingIndex={this.state.isPlayingIndex}
+          isRecording={isRecording}
+          setIsPlaying={this.setIsPlaying}
+          setIsRecording={this.setIsRecording}
+          handleBarChange={this.handleBarChange}
         />
       </>
     );

@@ -1,7 +1,7 @@
 export default [
   {
     id: 1234,
-    action: '@@INIT',
+    action: { type: 'INIT', payload: '' },
     state: {
       totalMarkets: 0,
       totalCards: 0,
@@ -12,20 +12,18 @@ export default [
   },
   {
     id: 1235,
-    action: 'SET_NEW_LOCATION',
-    payload: 'nyc',
+    action: { type: 'SET_NEW_LOCATION', payload: 'nyc' },
     state: {
       totalMarkets: 0,
       totalCards: 0,
       marketList: [],
       lastMarketId: 10000,
-      newLocation: 'nyc'
-    }
+      newLocation: 'nyc',
+    },
   },
   {
     id: 1236,
-    action: 'ADD_MARKET',
-    payload: 'nyc',
+    action: { type: 'ADD_MARKET', payload: 'nyc' },
     state: {
       totalMarkets: 1,
       totalCards: 0,
@@ -34,15 +32,15 @@ export default [
           location: 'nyc',
           cards: 0,
           marketId: 10001
-        }
+        },
       ],
       lastMarketId: 10001,
-      newLocation: ''
-    }
+      newLocation: '',
+    },
   },
   {
     id: 1237,
-    action: 'SET_NEW_LOCATION',
+    action: { type: 'SET_NEW_LOCATION', payload: 'la' },
     payload: 'la',
     state: {
       totalMarkets: 1,
@@ -51,17 +49,16 @@ export default [
         {
           location: 'nyc',
           cards: 0,
-          marketId: 10001
-        }
+          marketId: 10001,
+        },
       ],
       lastMarketId: 10001,
-      newLocation: 'la'
-    }
+      newLocation: 'la',
+    },
   },
   {
     id: 1238,
-    action: 'ADD_MARKET',
-    payload: 'la',
+    action: { type: 'ADD_MARKET', payload: 'boston' },
     state: {
       totalMarkets: 2,
       totalCards: 0,
@@ -83,8 +80,7 @@ export default [
   },
   {
     id: 1239,
-    action: 'ADD_CARD',
-    payload: 'marketId: 10002',
+    action: { type: 'ADD_CARD', payload: 'marketId: 10002' },
     state: {
       totalMarkets: 2,
       totalCards: 1,
@@ -106,8 +102,7 @@ export default [
   },
   {
     id: 1240,
-    action: 'ADD_CARD',
-    payload: 'marketID: 10002',
+    action: { type: 'ADD_CARD', payload: 'marketId: 10002' },
     state: {
       totalMarkets: 2,
       totalCards: 2,
@@ -129,8 +124,7 @@ export default [
   },
   {
     id: 1249,
-    action: 'ADD_CARD',
-    payload: 'marketID: 10003',
+    action: { type: 'ADD_CARD', payload: 'marketId: 10003' },
     state: {
       totalMarkets: 2,
       totalCards: 2,
@@ -157,8 +151,7 @@ export default [
   },
   {
     id: 1241,
-    action: 'DELETE_CARD',
-    payload: 'marketID: 10002',
+    action: { type: 'DELETE_CARD', payload: 'marketId: 10002' },
     state: {
       totalMarkets: 2,
       totalCards: 1,
