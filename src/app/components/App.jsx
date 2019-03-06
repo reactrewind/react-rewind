@@ -1,9 +1,6 @@
 import React, { useContext, Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-// data
-import data from '../data.jsx'
-
 // containers
 import SplitPane from '../container/SplitPane.jsx';
 import TimeSlider from '../container/TimeSlider.jsx';
