@@ -26,10 +26,10 @@ export default function Details(props) {
     <Router>
       <>
         <DetailsNav />
-
         {/* routing components and rendering them with props */}
         <Route
-          path='/actions'
+          exact
+          path='/'
           render={props => <ActionsDisplay {...props} action={action} />}
         />
         <Route
