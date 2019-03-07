@@ -9,9 +9,8 @@ export default function EventCreator(props) {
   } = props;
   return (
     <EventCard id={id} onClick={addAction} selectedEvent={selectedEvent}>
-      &#x2630;
-      {action}
-      <EventTimeDiv selectedEvent={selectedEvent}>{actionTime || '00:00:01'}</EventTimeDiv>
+      &#x2630;{action}
+      <EventTimeDiv id={id} selectedEvent={selectedEvent}>{actionTime || '00:00:01'}</EventTimeDiv>
     </EventCard>
 
   );
