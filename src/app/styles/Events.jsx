@@ -2,10 +2,8 @@ import styled from 'styled-components';
 
 // the entire events display wrapper
 export const EventsWrapper = styled.div`
-  min-height: 100px;
-  max-height: 200px;
+  height: -webkit-fill-available;
   overflow: auto;
-  border-bottom: 1px solid white;
 `;
 
 // single event card

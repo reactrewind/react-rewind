@@ -4,6 +4,7 @@ import React, { useContext, useState, Component} from 'react';
 import EventsNav from '../components/EventCards/EventsNav.jsx';
 import EventsDisplay from '../components/EventCards/EventsDisplay.jsx'
 import TimeTravel from '../components/EventCards/TimeTravel.jsx';
+import FilterBar from '../components/EventCards/FilterBar.jsx';
 
 class Events extends Component {
   constructor(props) {
@@ -18,12 +19,16 @@ class Events extends Component {
       data,
       toTheFuture,
       toThePast,
+      searchChange,
+      filteredData,
     } = this.props;
     return (
       <>
         <EventsNav />
+        <FilterBar searchChange={searchChange} />
         <EventsDisplay
           data={data}
+          filteredData={filteredData}
           addAction={addAction}
           activeEventId={activeEventId}
         />

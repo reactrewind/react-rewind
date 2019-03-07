@@ -19,14 +19,14 @@ const TimeSlider = (props) => {
   } = props;
 
   return (
-    <>
       <SliderWrapper>
         <Button onClick={setIsRecording}>{isRecording ? 'PAUSE' : 'RECORD'}</Button>
-        <Button onClick={setIsPlaying}>{ isPlaying ? <text>||</text> : <text>&#9658;</text> }</Button>
+        <Button onClick={toTheFuture}>{">"}</Button>
+        <Button onClick={toThePast}> {"<"} </Button>
+        <Button onClick={setIsPlaying}>{ isPlaying ? <text>| |</text> : <text>&#9658;</text> }</Button>
       <input type="range" min="0" max={data.length - 1} value={isPlayingIndex}
       onChange={handleBarChange} />
       </SliderWrapper>
-    </>
   );
 };
 

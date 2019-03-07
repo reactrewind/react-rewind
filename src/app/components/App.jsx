@@ -40,9 +40,10 @@ class App extends Component {
 
     this.state = {
       data: [],
+      searchField: '',
+      filteredData: [],
       isPlaying: false,
       isRecording: false,
-      isSearching: false,
       isPlayingIndex: 0,
     };
 
@@ -82,7 +83,6 @@ class App extends Component {
       this.state.isPlayingIndex = 0;
     }
 
-    console.log('isplaying')
     let { isPlaying } = this.state;
     isPlaying = !isPlaying;
     this.setState({ isPlaying });
@@ -130,10 +130,21 @@ class App extends Component {
   }
 
   // filter search bar results
-  // *** NOT FINISHED ***
   searchChange(e) {
     const { data } = this.state;
-    console.log(data);
+    
+    // grab user entry from filter bar
+    const compareSearchValue = e.target.value;
+
+    // set state with compare value
+    this.setState({ searchField: compareSearchValue })
+
+    // match results from our filter entry to data
+    const actions = data.filter(function(item) {
+      const type = item.action.type.toLowerCase();
+      return type.includes(compareSearchValue.toLowerCase());
+    });
+    this.setState({ filteredData: actions });
   }
 
   // time travel bar change
@@ -178,6 +189,7 @@ class App extends Component {
       isPlaying,
       setIsRecording,
       isRecording,
+      filteredData,
     } = this.state;
 
     return (
@@ -192,6 +204,8 @@ class App extends Component {
                 toTheFuture={this.toTheFuture}
                 toThePast={this.toThePast}
                 activeEventId={id}
+                searchChange={this.searchChange}
+                filteredData={filteredData}
               />
             )}
           right={
