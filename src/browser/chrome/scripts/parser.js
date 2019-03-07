@@ -1,4 +1,3 @@
-// function parser() {
 const esprima = require('esprima');
 const estraverse = require('estraverse');
 const escodegen = require('escodegen');
@@ -117,6 +116,16 @@ function commitAllHostEffectsReplacement() {
     resetCurrentFiber();
   }
 }
+// regex method signatures
+const uRsig = new RegExp(/\b(useReducer)\b\(reducer, initialArg, init\)/);
+const cAHEsig = new RegExp(/\b(function)\b\s\b(commitAllHostEffects)\b\(\)/, 'g');
+// get replacer method bodies
+const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+// const injectableCommitAllHostEffects = injectableCommitAllHostEffects.body[0].body;
+const injectableCommitAllHostEffectsString = escodegen.generate(injectableCommitAllHostEffects.body[0].body);
+
+const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+const injectableUseReducerString = escodegen.generate(injectableUseReducer.body[0].body);
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
