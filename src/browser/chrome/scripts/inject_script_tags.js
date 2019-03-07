@@ -21,8 +21,8 @@ chrome.runtime.onMessage.addListener(scheduleWork);
 
 function scheduleWork(work) {
   // We want to add the scripts to a work array. When its been 100s
-  // without receiving any new scripts, then we sort the array of 
-  // scripts and add them all to the page.
+  // without receiving any new scripts, then we sort the array and
+  // add all scripts to the page.
   if (work) scriptsToParse.push(work);
 
   if (Date.now() - lastReceivedMsgTime > 100 && lastReceivedMsgTime !== null) {

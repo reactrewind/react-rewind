@@ -75,11 +75,11 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.state.isPlayingIndex === this.state.data.length - 1) {
-      this.state.isPlayingIndex = 0;
+    if (this.state.isPlayingIndex > this.state.data.length - 1) {
+      this.setState({ isPlayingIndex: 0 });
     }
 
-    console.log('isplaying')
+    console.log('isplaying');
     let { isPlaying } = this.state;
     isPlaying = !isPlaying;
     this.setState({ isPlaying });
@@ -98,14 +98,17 @@ class App extends Component {
   }
 
   actionInPlay() {
-    this.isPlayingIndex++;
+    let { isPlayingIndex } = this.state;
+    if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
 
-    const { id, action, state } = this.state.data[this.isPlayingIndex];
+    this.setState({ isPlayingIndex: isPlayingIndex + 1 });
+    const { id, action, state } = this.state.data[isPlayingIndex + 1];
+
     setTimeout(() => {
       this.setState((prev, props) => {
-        return { ...prev, id, action, state }
+        return { ...prev, id, action, state };
       });
-      if (this.state.isPlaying && this.isPlayingIndex < this.state.data.length - 1) {
+      if (this.state.isPlaying && isPlayingIndex + 1 < this.state.data.length - 1) {
         this.actionInPlay();
       } else {
         this.setState({ isPlaying: false });
@@ -142,7 +145,7 @@ class App extends Component {
       id,
       action,
       state,
-      isPlayingIndex: e.target.value,
+      isPlayingIndex: parseInt(e.target.value),
     });
   }
 
