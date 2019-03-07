@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-var Link = require('react-router-dom').Link;
-var NavLink = require('react-router-dom').NavLink;
-//styled component imports
-import { Buttons, Button, DetailsNavWrapper, Ul } from '../../styles/Nav.jsx';
+let NavLink = require('react-router-dom').NavLink;
+
+// styled component imports
+import { Buttons, Button, DetailsNavWrapper } from '../../styles/Nav.jsx';
 
 
 export default function RightNav(props) {
@@ -11,7 +11,7 @@ export default function RightNav(props) {
     <>
       <DetailsNavWrapper>
         <Buttons>
-          <NavLink activeClassName='active' to='/'>
+          <NavLink exact activeClassName='active' to='/'>
             <Button>actions</Button>
           </NavLink>
           <NavLink activeClassName='active' to='/effects'>

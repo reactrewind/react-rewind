@@ -8,6 +8,7 @@ export const SliderWrapper = styled.div`
   border-top: 1px solid #191c23;
   width: 100%;
   background-color: #3C444F;
+  align-self: flex-end;
 `;
 
 export const Button = styled.div`
@@ -17,6 +18,7 @@ export const Button = styled.div`
   font-size: 20px;
   width: 40px;
   color: white;
+  cursor: pointer;
   font-family: 'arial';
 
 `;

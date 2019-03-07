@@ -9,6 +9,9 @@ import TimeSlider from '../container/TimeSlider.jsx';
 import Events from '../container/Events.jsx';
 import Details from '../container/Details.jsx';
 
+// styled components
+import { Wrapper } from '../styles/SplitPane.jsx';
+
 // import from styled components to create global styles
 const GlobalStyle = createGlobalStyle`
   html {
@@ -37,9 +40,10 @@ class App extends Component {
 
     this.state = {
       data: [],
+      searchField: '',
+      filteredData: [],
       isPlaying: false,
       isRecording: false,
-      isSearching: false,
       isPlayingIndex: 0,
     };
 
@@ -55,6 +59,11 @@ class App extends Component {
   }
 
   componentDidMount() {
+    // *******************************************************
+    // need to impletement setState for filteredData to same value as data
+    // this.setState({ data, filteredData: data });
+    // *******************************************************
+
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
@@ -79,7 +88,6 @@ class App extends Component {
       this.setState({ isPlayingIndex: 0 });
     }
 
-    console.log('isplaying');
     let { isPlaying } = this.state;
     isPlaying = !isPlaying;
     this.setState({ isPlaying });
@@ -130,10 +138,21 @@ class App extends Component {
   }
 
   // filter search bar results
-  // *** NOT FINISHED ***
   searchChange(e) {
     const { data } = this.state;
-    console.log(data);
+    
+    // grab user entry from filter bar
+    const compareSearchValue = e.target.value;
+
+    // set state with compare value
+    this.setState({ searchField: compareSearchValue })
+
+    // match results from our filter entry to data
+    const actions = data.filter(function(item) {
+      const type = item.action.type.toLowerCase();
+      return type.includes(compareSearchValue.toLowerCase());
+    });
+    this.setState({ filteredData: actions });
   }
 
   // time travel bar change
@@ -178,42 +197,45 @@ class App extends Component {
       isPlaying,
       setIsRecording,
       isRecording,
+      filteredData,
     } = this.state;
 
     return (
       <>
         <GlobalStyle />
-        <SplitPane
-          left={
-            (
-              <Events
-                data={data} 
-                addAction={this.addActionToView}
-                toTheFuture={this.toTheFuture}
-                toThePast={this.toThePast}
-                activeEventId={id}
-              />
-            )}
-          right={
-            (
-              <Details
-                action={action}
-                id={id}
-                actionState={state}
-              />
-            )}
-        />
-        <TimeSlider
-          data={data}
-          toTheFuture={this.toTheFuture}
-          toThePast={this.toThePast}
-          isPlaying={isPlaying}
-          isPlayingIndex={this.state.isPlayingIndex}
-          isRecording={isRecording}
-          setIsPlaying={this.setIsPlaying}
-          setIsRecording={this.setIsRecording}
-          handleBarChange={this.handleBarChange}
-        />
+        <Wrapper>
+          <SplitPane
+            left={
+              (
+                <Events
+                  data={data}
+                  addAction={this.addActionToView}
+                  activeEventId={id}
+                  searchChange={this.searchChange}
+                  filteredData={filteredData}
+                />
+              )}
+            right={
+              (
+                <Details
+                  action={action}
+                  id={id}
+                  actionState={state}
+                />
+              )}
+          />
+          <TimeSlider
+            data={data}
+            toTheFuture={this.toTheFuture}
+            toThePast={this.toThePast}
+            isPlaying={isPlaying}
+            isPlayingIndex={this.state.isPlayingIndex}
+            isRecording={isRecording}
+            setIsPlaying={this.setIsPlaying}
+            setIsRecording={this.setIsRecording}
+            handleBarChange={this.handleBarChange}
+          />
+        </Wrapper>
       </>
     );
   }

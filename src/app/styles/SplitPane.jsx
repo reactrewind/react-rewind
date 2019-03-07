@@ -1,14 +1,19 @@
 import styled from 'styled-components';
 
+// from grid
+export const Wrapper = styled.div`
+display: grid;
+height: 100vh;
+grid-template-rows: 1fr auto;
+`;
+
 // wrapper for total split pane views
 export const PaneWrapper = styled.div`
   font-family: "arial";
   font-size: .80em;
   color: #E8E8F4;
   background-color: #2A2E3A;
-  /* CHANGED HEIGHT FROM 100VH */
   height: 100%;
-  /* margin-bottom: 30px; */
   display: flex;
   justify-content: space-around;
 `;
@@ -17,8 +22,9 @@ export const PaneWrapper = styled.div`
 export const LeftPane = styled.div`
   background-color: #2A2E3A;
   border-right: 3px double #484C54;
-  height: 100%;
   width: 43%;
+  display: flex;
+  flex-direction: column;
 `;
 
 // wrapper for details (right hand side)
