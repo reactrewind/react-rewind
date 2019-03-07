@@ -7,11 +7,11 @@
     "default_popup": "page_action.html"
   },
   "background": {
-    "scripts": ["bundle.js"]
+    "scripts": ["devtools_bundle/bg_bundle.js"]
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>", "http://*/*", "https://*/*"],
+      "matches": ["<all_urls>"],
       "js": ["scripts/inject_script_tags.js"],
       "run_at":"document_start"
     }

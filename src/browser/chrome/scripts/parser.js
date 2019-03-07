@@ -5,12 +5,11 @@ const escodegen = require('escodegen');
 const _ = require('lodash');
 
 // declare functions to insert
-// TODO: Un-comment timeTravelTracker
 function useReducerReplacement() {
   const dispatcher = resolveDispatcher();
   function reducerWithTracker(state, action) {
     const newState = reducer(state, action);
-    //  timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
+    timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
     window.postMessage({
       type: 'DISPATCH',
       data: {
@@ -22,7 +21,15 @@ function useReducerReplacement() {
   }
   return dispatcher.useReducer(reducerWithTracker, initialArg, init);
 }
+
 function commitAllHostEffectsReplacement() {
+  if (Object.keys(funcStorage).length === 0) {
+    funcStorage.commitDeletion = commitDeletion;
+    funcStorage.commitPlacement = commitPlacement;
+    funcStorage.commitWork = commitWork;
+    funcStorage.prepareUpdate = prepareUpdate;
+  }
+
   while (nextEffect !== null) {
     {
       setCurrentFiber(nextEffect);
@@ -51,12 +58,9 @@ function commitAllHostEffectsReplacement() {
       case Placement:
       {
         // editbyme
-        window.postMessage({
-          type: 'EFFECT',
-          data: {
+        timeTravelTracker.push({
             primaryEffectTag: 'PLACEMENT',
             effect: _.cloneDeep(nextEffect),
-          },
         });
 
         commitPlacement(nextEffect);
@@ -84,13 +88,10 @@ function commitAllHostEffectsReplacement() {
       case Update:
       {
         // editbyme
-        window.postMessage({
-          type: 'EFFECT',
-          data: {
-            primaryEffectTag: 'UPDATE',
-            effect: _.cloneDeep(nextEffect),
-            current: _.cloneDeep(nextEffect.alternate),
-          },
+        timeTravelTracker.push({
+          primaryEffectTag: 'UPDATE',
+          effect: _.cloneDeep(nextEffect),
+          current: _.cloneDeep(nextEffect.alternate),
         });
 
         let _current2 = nextEffect.alternate;
@@ -100,12 +101,9 @@ function commitAllHostEffectsReplacement() {
       case Deletion:
       {
         // editbyme
-        window.postMessage({
-          type: 'EFFECT',
-          data: {
-            primaryEffectTag: 'DELETION',
-            effect: _.cloneDeep(nextEffect),
-          },
+        timeTravelTracker.push({
+          primaryEffectTag: 'DELETION',
+          effect: _.cloneDeep(nextEffect),
         });
 
         commitDeletion(nextEffect);
@@ -122,11 +120,13 @@ function commitAllHostEffectsReplacement() {
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
+  console.log('traverse called');
   estraverse.replace(ast, {
     enter(node) {
       if (node.type === 'FunctionDeclaration') {
         if (node.id.name === functionName) {
           node.body = replacementNode.body[0].body;
+          console.log('From parser. REPLACING!', node.id.name);
         }
       }
     },
@@ -134,22 +134,23 @@ function traverseTree(replacementNode, functionName, ast) {
 }
 
 const parseAndGenerate = (codeString) => {
-  if (codeString.search('react')) {
+  if (codeString.search('react') !== -1) {
     const ast = esprima.parseModule(codeString);
+    
     // parse react-dom code
-    if (codeString.search('react-dom')) {
-      const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-      traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
-    } else {
-      // parse react code
-      const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-      traverseTree(injectableUseReducer, 'useReducer', ast);
-    }
+    const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+    traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
+
+    // parse react code
+    const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+    traverseTree(injectableUseReducer, 'useReducer', ast);
+    
     const code = escodegen.generate(ast);
+    console.log('returning code.');
     return code;
   }
-  return -1;
+  console.log('returning string.');
+  return codeString;
 };
 
-// }
 module.exports = parseAndGenerate;

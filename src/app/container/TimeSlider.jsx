@@ -22,9 +22,9 @@ const TimeSlider = (props) => {
     <>
       <SliderWrapper>
         <Button onClick={setIsRecording}>{isRecording ? 'PAUSE' : 'RECORD'}</Button>
-        <Button onClick={setIsPlaying}>{ isPlaying ? <text>||</text> : <text>&#9658;</text> }</Button>
-      <input type="range" min="0" max={data.length - 1} value={isPlayingIndex}
-      onChange={handleBarChange} />
+        <Button onClick={setIsPlaying}>{isPlaying ? '||' : '►'}</Button>
+        <input type="range" min="0" max={data.length - 1} value={isPlayingIndex}
+         onChange={handleBarChange} />
       </SliderWrapper>
     </>
   );
