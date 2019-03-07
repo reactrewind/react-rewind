@@ -1,9 +1,6 @@
 import React, { useContext, Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-// data
-import data from '../data.jsx'
-
 // containers
 import SplitPane from '../container/SplitPane.jsx';
 import TimeSlider from '../container/TimeSlider.jsx';
@@ -11,6 +8,9 @@ import TimeSlider from '../container/TimeSlider.jsx';
 // left pane = events, right pane = details
 import Events from '../container/Events.jsx';
 import Details from '../container/Details.jsx';
+
+// styled components
+import { Wrapper } from '../styles/SplitPane.jsx';
 
 // import from styled components to create global styles
 const GlobalStyle = createGlobalStyle`
@@ -59,6 +59,11 @@ class App extends Component {
   }
 
   componentDidMount() {
+    // *******************************************************
+    // need to impletement setState for filteredData to same value as data
+    // this.setState({ data, filteredData: data });
+    // *******************************************************
+
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
@@ -79,8 +84,8 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.state.isPlayingIndex === this.state.data.length - 1) {
-      this.state.isPlayingIndex = 0;
+    if (this.state.isPlayingIndex > this.state.data.length - 1) {
+      this.setState({ isPlayingIndex: 0 });
     }
 
     let { isPlaying } = this.state;
@@ -101,14 +106,17 @@ class App extends Component {
   }
 
   actionInPlay() {
-    this.isPlayingIndex++;
+    let { isPlayingIndex } = this.state;
+    if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
 
-    const { id, action, state } = this.state.data[this.isPlayingIndex];
+    this.setState({ isPlayingIndex: isPlayingIndex + 1 });
+    const { id, action, state } = this.state.data[isPlayingIndex + 1];
+
     setTimeout(() => {
       this.setState((prev, props) => {
-        return { ...prev, id, action, state }
+        return { ...prev, id, action, state };
       });
-      if (this.state.isPlaying && this.isPlayingIndex < this.state.data.length - 1) {
+      if (this.state.isPlaying && isPlayingIndex + 1 < this.state.data.length - 1) {
         this.actionInPlay();
       } else {
         this.setState({ isPlaying: false });
@@ -156,7 +164,7 @@ class App extends Component {
       id,
       action,
       state,
-      isPlayingIndex: e.target.value,
+      isPlayingIndex: parseInt(e.target.value),
     });
   }
 
@@ -195,39 +203,39 @@ class App extends Component {
     return (
       <>
         <GlobalStyle />
-        <SplitPane
-          left={
-            (
-              <Events
-                data={data} 
-                addAction={this.addActionToView}
-                toTheFuture={this.toTheFuture}
-                toThePast={this.toThePast}
-                activeEventId={id}
-                searchChange={this.searchChange}
-                filteredData={filteredData}
-              />
-            )}
-          right={
-            (
-              <Details
-                action={action}
-                id={id}
-                actionState={state}
-              />
-            )}
-        />
-        <TimeSlider
-          data={data}
-          toTheFuture={this.toTheFuture}
-          toThePast={this.toThePast}
-          isPlaying={isPlaying}
-          isPlayingIndex={this.state.isPlayingIndex}
-          isRecording={isRecording}
-          setIsPlaying={this.setIsPlaying}
-          setIsRecording={this.setIsRecording}
-          handleBarChange={this.handleBarChange}
-        />
+        <Wrapper>
+          <SplitPane
+            left={
+              (
+                <Events
+                  data={data}
+                  addAction={this.addActionToView}
+                  activeEventId={id}
+                  searchChange={this.searchChange}
+                  filteredData={filteredData}
+                />
+              )}
+            right={
+              (
+                <Details
+                  action={action}
+                  id={id}
+                  actionState={state}
+                />
+              )}
+          />
+          <TimeSlider
+            data={data}
+            toTheFuture={this.toTheFuture}
+            toThePast={this.toThePast}
+            isPlaying={isPlaying}
+            isPlayingIndex={this.state.isPlayingIndex}
+            isRecording={isRecording}
+            setIsPlaying={this.setIsPlaying}
+            setIsRecording={this.setIsRecording}
+            handleBarChange={this.handleBarChange}
+          />
+        </Wrapper>
       </>
     );
   }

@@ -5740,30 +5740,34 @@ exports.SourceNode = require('./lib/source-node').SourceNode;
 
 },{"./lib/source-map-consumer":8,"./lib/source-map-generator":9,"./lib/source-node":10}],13:[function(require,module,exports){
 module.exports={
-  "_from": "escodegen",
+  "_args": [
+    [
+      "escodegen@1.11.1",
+      "/Users/brandon/Desktop/codesmith/_Projects/4_production/react-rewind"
+    ]
+  ],
+  "_from": "escodegen@1.11.1",
   "_id": "escodegen@1.11.1",
   "_inBundle": false,
   "_integrity": "sha512-JwiqFD9KdGVVpeuRa68yU3zZnBEOcPs0nKW7wZzXky8Z7tffdYUHbe11bPCV5jYlK6DVdKLWLm0f5I/QlL0Kmw==",
   "_location": "/escodegen",
   "_phantomChildren": {},
   "_requested": {
-    "type": "tag",
+    "type": "version",
     "registry": true,
-    "raw": "escodegen",
+    "raw": "escodegen@1.11.1",
     "name": "escodegen",
     "escapedName": "escodegen",
-    "rawSpec": "",
+    "rawSpec": "1.11.1",
     "saveSpec": null,
-    "fetchSpec": "latest"
+    "fetchSpec": "1.11.1"
   },
   "_requiredBy": [
-    "#USER",
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/escodegen/-/escodegen-1.11.1.tgz",
-  "_shasum": "c485ff8d6b4cdb89e27f4a856e91f118401ca510",
-  "_spec": "escodegen",
-  "_where": "/Users/kia/Codesmith/react-rewind/src/browser/chrome",
+  "_spec": "1.11.1",
+  "_where": "/Users/brandon/Desktop/codesmith/_Projects/4_production/react-rewind",
   "bin": {
     "esgenerate": "./bin/esgenerate.js",
     "escodegen": "./bin/escodegen.js"
@@ -5771,7 +5775,6 @@ module.exports={
   "bugs": {
     "url": "https://github.com/estools/escodegen/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {
     "esprima": "^3.1.3",
     "estraverse": "^4.2.0",
@@ -5779,7 +5782,6 @@ module.exports={
     "optionator": "^0.8.1",
     "source-map": "~0.6.1"
   },
-  "deprecated": false,
   "description": "ECMAScript code generator",
   "devDependencies": {
     "acorn": "^4.0.4",
@@ -13394,40 +13396,41 @@ return /******/ (function(modules) { // webpackBootstrap
 
 },{"./package.json":16}],16:[function(require,module,exports){
 module.exports={
-  "_from": "estraverse",
+  "_args": [
+    [
+      "estraverse@4.2.0",
+      "/Users/brandon/Desktop/codesmith/_Projects/4_production/react-rewind"
+    ]
+  ],
+  "_development": true,
+  "_from": "estraverse@4.2.0",
   "_id": "estraverse@4.2.0",
   "_inBundle": false,
   "_integrity": "sha1-De4/7TH81GlhjOc0IJn8GvoL2xM=",
   "_location": "/estraverse",
   "_phantomChildren": {},
   "_requested": {
-    "type": "tag",
+    "type": "version",
     "registry": true,
-    "raw": "estraverse",
+    "raw": "estraverse@4.2.0",
     "name": "estraverse",
     "escapedName": "estraverse",
-    "rawSpec": "",
+    "rawSpec": "4.2.0",
     "saveSpec": null,
-    "fetchSpec": "latest"
+    "fetchSpec": "4.2.0"
   },
   "_requiredBy": [
-    "#USER",
-    "/",
-    "/escodegen",
     "/eslint-scope",
     "/eslint/eslint-scope",
     "/esquery",
     "/esrecurse"
   ],
   "_resolved": "https://registry.npmjs.org/estraverse/-/estraverse-4.2.0.tgz",
-  "_shasum": "0dee3fed31fcd469618ce7342099fc1afa0bdb13",
-  "_spec": "estraverse",
-  "_where": "/Users/kia/Codesmith/react-rewind/src/browser/chrome",
+  "_spec": "4.2.0",
+  "_where": "/Users/brandon/Desktop/codesmith/_Projects/4_production/react-rewind",
   "bugs": {
     "url": "https://github.com/estools/estraverse/issues"
   },
-  "bundleDependencies": false,
-  "deprecated": false,
   "description": "ECMAScript JS AST traversal functions",
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",
@@ -31065,7 +31068,7 @@ module.exports={
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],22:[function(require,module,exports){
-const parseAndGenerate = require('./parser');
+const parseAndGenerate = require('./scripts/parser');
 
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
@@ -31077,39 +31080,42 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
   });
 });
 
-chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.react_check) {
-    console.log('Background got the react_check! Resending...');
-
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, msg);
-    });
-  }
-});
-
-// let shouldRedirect = true;
+let reqIndex = 0;
+const urlCache = {};
 chrome.webRequest.onBeforeRequest.addListener(
   (request) => {
-    console.log('web')
-    if (request.type === 'script' && !request.url.startsWith('chrome')) {
-      console.log('redirecting... ORIGINAL: ', request);
-      fetch(request.url)
-        .then(r => r.text())
-        .then((codeString) => {
-          const editedCode = parseAndGenerate(codeString);
-          console.log( editedCode);
-          if (!editedCode) return { redirectUrl: request.url };
+    if (request.type === 'script' && !request.url.startsWith('chrome')
+    && request.frameId === 0) {
+      // TODO: adjust comment
+      // Else we need to check wether or not this contains the react
+      // library. If it does, we need to send the edit javascript to
+      // out content script, so it can inject into the page. If it doesnt,
+      // we need to send the url to our content script so that it can
+      // add it to the page <script src=URL> AND add it to our cache, so
+      // that when we intercept it, we dont block it.
+      const syncRequest = new XMLHttpRequest();
+      syncRequest.open('GET', request.url, false);
+      syncRequest.send(null);
+      console.log(`Status: ${syncRequest.status} - Size of response: ${syncRequest.responseText.length}`);
 
-          // sendMessageToContent(editedCode);
-          // return { redirectUrl: 'javascript:' };
-        });
+      sendMessageToContent(parseAndGenerate(syncRequest.responseText));
+
+      return { redirectUrl: 'javascript:' };
     }
   },
   { urls: ['<all_urls>'] },
   ['blocking'],
 );
 
-},{"./parser":23}],23:[function(require,module,exports){
+function sendMessageToContent(codeString) {
+  const index = reqIndex++;
+  console.log(`Sending request ${index}.`);
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { codeString, index });
+  });
+}
+
+},{"./scripts/parser":23}],23:[function(require,module,exports){
 // function parser() {
 const esprima = require('esprima');
 const estraverse = require('estraverse');
@@ -31117,12 +31123,11 @@ const escodegen = require('escodegen');
 const _ = require('lodash');
 
 // declare functions to insert
-// TODO: Un-comment timeTravelTracker
 function useReducerReplacement() {
   const dispatcher = resolveDispatcher();
   function reducerWithTracker(state, action) {
     const newState = reducer(state, action);
-    //  timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
+    timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
     window.postMessage({
       type: 'DISPATCH',
       data: {
@@ -31134,7 +31139,15 @@ function useReducerReplacement() {
   }
   return dispatcher.useReducer(reducerWithTracker, initialArg, init);
 }
+
 function commitAllHostEffectsReplacement() {
+  if (Object.keys(funcStorage).length === 0) {
+    funcStorage.commitDeletion = commitDeletion;
+    funcStorage.commitPlacement = commitPlacement;
+    funcStorage.commitWork = commitWork;
+    funcStorage.prepareUpdate = prepareUpdate;
+  }
+
   while (nextEffect !== null) {
     {
       setCurrentFiber(nextEffect);
@@ -31163,12 +31176,9 @@ function commitAllHostEffectsReplacement() {
       case Placement:
       {
         // editbyme
-        window.postMessage({
-          type: 'EFFECT',
-          data: {
+        timeTravelTracker.push({
             primaryEffectTag: 'PLACEMENT',
             effect: _.cloneDeep(nextEffect),
-          },
         });
 
         commitPlacement(nextEffect);
@@ -31196,13 +31206,10 @@ function commitAllHostEffectsReplacement() {
       case Update:
       {
         // editbyme
-        window.postMessage({
-          type: 'EFFECT',
-          data: {
-            primaryEffectTag: 'UPDATE',
-            effect: _.cloneDeep(nextEffect),
-            current: _.cloneDeep(nextEffect.alternate),
-          },
+        timeTravelTracker.push({
+          primaryEffectTag: 'UPDATE',
+          effect: _.cloneDeep(nextEffect),
+          current: _.cloneDeep(nextEffect.alternate),
         });
 
         let _current2 = nextEffect.alternate;
@@ -31212,12 +31219,9 @@ function commitAllHostEffectsReplacement() {
       case Deletion:
       {
         // editbyme
-        window.postMessage({
-          type: 'EFFECT',
-          data: {
-            primaryEffectTag: 'DELETION',
-            effect: _.cloneDeep(nextEffect),
-          },
+        timeTravelTracker.push({
+          primaryEffectTag: 'DELETION',
+          effect: _.cloneDeep(nextEffect),
         });
 
         commitDeletion(nextEffect);
@@ -31234,11 +31238,13 @@ function commitAllHostEffectsReplacement() {
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
+  console.log('traverse called');
   estraverse.replace(ast, {
     enter(node) {
       if (node.type === 'FunctionDeclaration') {
         if (node.id.name === functionName) {
           node.body = replacementNode.body[0].body;
+          console.log('From parser. REPLACING!', node.id.name);
         }
       }
     },
@@ -31246,24 +31252,25 @@ function traverseTree(replacementNode, functionName, ast) {
 }
 
 const parseAndGenerate = (codeString) => {
-  if (codeString.search('react')) {
+  if (codeString.search('react') !== -1) {
     const ast = esprima.parseModule(codeString);
+    
     // parse react-dom code
-    if (codeString.search('react-dom')) {
-      const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-      traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
-    } else {
-      // parse react code
-      const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-      traverseTree(injectableUseReducer, 'useReducer', ast);
-    }
+    const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+    traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
+
+    // parse react code
+    const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+    traverseTree(injectableUseReducer, 'useReducer', ast);
+    
     const code = escodegen.generate(ast);
+    console.log('returning code.');
     return code;
   }
-  return -1;
+  console.log('returning string.');
+  return codeString;
 };
 
-// }
 module.exports = parseAndGenerate;
 
 },{"escodegen":1,"esprima":14,"estraverse":15,"lodash":21}]},{},[22]);

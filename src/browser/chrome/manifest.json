@@ -11,7 +11,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>", "http://*/*", "https://*/*"],
+      "matches": ["<all_urls>"],
       "js": ["scripts/inject_script_tags.js"],
       "run_at":"document_start"
     }

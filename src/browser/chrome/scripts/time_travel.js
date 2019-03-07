@@ -1,8 +1,7 @@
 let timeTravelTracker = [];
 let timeTravelTrackerIndex = null;
-
-// TODO: we need a function to get a reference to the root container instance.
-const root2 = document.querySelector('#content');
+const funcStorage = {};
+let root;
 
 function timeTravel(direction) {
   if (timeTravelTrackerIndex === null) {
@@ -10,6 +9,7 @@ function timeTravel(direction) {
     // from position [0]. This is originated from the initial mount of the App.
     timeTravelTracker = timeTravelTracker.slice(1);
     timeTravelTrackerIndex = timeTravelTracker.length - 1;
+    root = getRootContainerInstance(timeTravelTracker[0].effect);
   }
 
   const diff = direction === 'forward' ? 1 : -1;
@@ -22,6 +22,12 @@ function timeTravel(direction) {
   if (diff === 1 && timeTravelTrackerIndex !== 0) timeTravelTrackerIndex += 1;
 
   while (true) {
+    const {
+      commitDeletion,
+      commitPlacement,
+      commitWork,
+      prepareUpdate,
+    } = funcStorage;
     console.log('doing work for ', timeTravelTrackerIndex);
     const { primaryEffectTag, effect } = timeTravelTracker[timeTravelTrackerIndex];
 
@@ -40,20 +46,22 @@ function timeTravel(direction) {
         // we should perform this check in a more generalized way.
         if (effect.tag !== 6) {
           // if the fiberNode is a HostText (tag = 6), the effect does NOT
-          // have a updateQueue. Otherwise, we need to get the .updateQueue
+          // have an updateQueue. Otherwise, we need to get the .updateQueue
           // value that represents this backwards transformation. This value
           // is returned by the prepareUpdate function.
-          const rootContainerInstance = root2;
           const payload = prepareUpdate(
             effect.stateNode,
             effect.type,
             effect.memoizedProps,
             current.memoizedProps,
-            rootContainerInstance,
+            root,
             {},
           );
 
-          current.updateQueue = payload;
+          const currentCopy = _.cloneDeep(current);
+          currentCopy.updateQueue = payload;
+          commitWork(effect, currentCopy);
+          break;
         }
 
         commitWork(effect, current);
@@ -69,6 +77,7 @@ function timeTravel(direction) {
           // on commitPlacement() on this same node. This is why we need to clone
           // the effect fiberNode and call commitDeletion() on that instead.
           const effectCopy = _.cloneDeep(effect);
+          console.log(effectCopy);
           commitDeletion(effectCopy);
         }
         break;
@@ -100,6 +109,12 @@ function timeTravel(direction) {
       return;
     }
   }
+}
+
+function getRootContainerInstance(fiberNode) {
+  let current = fiberNode;
+  while (current.return) current = current.return;
+  return current.stateNode.containerInfo;
 }
 
 window.addEventListener('message', (msg) => {
