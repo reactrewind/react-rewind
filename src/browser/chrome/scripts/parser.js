@@ -120,13 +120,12 @@ function commitAllHostEffectsReplacement() {
 const uRsig = new RegExp(/\b(useReducer)\b\(reducer, initialArg, init\)/);
 const cAHEsig = new RegExp(/\b(function)\b\s\b(commitAllHostEffects)\b\(\)/, 'g');
 // get replacer method bodies
-const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-// const injectableCommitAllHostEffects = injectableCommitAllHostEffects.body[0].body;
-const injectableCommitAllHostEffectsString = escodegen.generate(injectableCommitAllHostEffects.body[0].body);
-
 const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
 const injectableUseReducerString = escodegen.generate(injectableUseReducer.body[0].body);
 
+const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+// const injectableCommitAllHostEffects = injectableCommitAllHostEffects.body[0].body;
+const injectableCommitAllHostEffectsString = escodegen.generate(injectableCommitAllHostEffects.body[0].body);
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
   console.log('traverse called');
@@ -141,17 +140,47 @@ function traverseTree(replacementNode, functionName, ast) {
     },
   });
 }
-
+function stringParser(string, newBody, methodSig) {
+  let stack = [];
+  const foundMethod = methodSig.test(string);
+  let oldBody = '';
+  let output;
+  for (let i = methodSig.lastIndex; i < string.length; i++) {
+    if (foundMethod) {
+      if (string[i] === '{') {
+        stack.push(string[i]);
+      }
+      if (stack.length > 0 && stack[stack.length - 1] === '{' && string[i] === '}') {
+        stack.pop();
+        oldBody += string[i];
+        output = string.replace(oldBody, newBody);
+        break;
+      }
+      if (stack.length > 0) {
+        oldBody += string[i];
+      }
+    }
+  }
+  return output;
+}
 const parseAndGenerate = (codeString) => {
   if (codeString.search('react') !== -1) {
-    const ast = esprima.parseModule(codeString);
-    
+    let ast;
+    try {
+      ast = esprima.parseModule(codeString);
+    } catch (error) {
+      // exprima throws parsing error webpack devtool setting generates code
+      console.log('unable to use esprima parser');
+      codeString = stringParser(codeString, injectableUseReducerString, uRsig);
+      codeString = stringParser(codeString, injectableCommitAllHostEffectsString, cAHEsig);
+      return codeString;
+    }
     // parse react-dom code
-    const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+    injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
     traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
 
     // parse react code
-    const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+    injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
     traverseTree(injectableUseReducer, 'useReducer', ast);
     
     const code = escodegen.generate(ast);
