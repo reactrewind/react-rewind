@@ -9,7 +9,7 @@ function useReducerReplacement() {
   const dispatcher = resolveDispatcher();
   function reducerWithTracker(state, action) {
     const newState = reducer(state, action);
-    timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
+    timeTravelLList.tail.value.actionDispatched = true;
     window.postMessage({
       type: 'DISPATCH',
       data: {
@@ -58,7 +58,7 @@ function commitAllHostEffectsReplacement() {
       case Placement:
       {
         // editbyme
-        timeTravelTracker.push({
+        timeTravelLList.append({
             primaryEffectTag: 'PLACEMENT',
             effect: _.cloneDeep(nextEffect),
         });
@@ -88,7 +88,7 @@ function commitAllHostEffectsReplacement() {
       case Update:
       {
         // editbyme
-        timeTravelTracker.push({
+        timeTravelLList.append({
           primaryEffectTag: 'UPDATE',
           effect: _.cloneDeep(nextEffect),
           current: _.cloneDeep(nextEffect.alternate),
@@ -101,7 +101,7 @@ function commitAllHostEffectsReplacement() {
       case Deletion:
       {
         // editbyme
-        timeTravelTracker.push({
+        timeTravelLList.append({
           primaryEffectTag: 'DELETION',
           effect: _.cloneDeep(nextEffect),
         });

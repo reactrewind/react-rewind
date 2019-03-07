@@ -129,6 +129,7 @@ class App extends Component {
 
     this.setState({ isPlayingIndex: isPlayingIndex + 1 });
     const { id, action, state } = this.state.data[isPlayingIndex + 1];
+    this.toThePast();
 
     setTimeout(() => {
       this.setState((prev, props) => {
@@ -158,12 +159,12 @@ class App extends Component {
   // filter search bar results
   searchChange(e) {
     const { data } = this.state;
-    
+
     // grab user entry from filter bar
     const compareSearchValue = e.target.value;
 
     // set state with compare value
-    this.setState({ searchField: compareSearchValue })
+    this.setState({ searchField: compareSearchValue });
 
     // match results from our filter entry to data
     const actions = data.filter(function(item) {
