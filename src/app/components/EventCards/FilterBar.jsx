@@ -1,15 +1,23 @@
 import React from 'react';
 
+
+// styled components
+import { FilterWrapper } from '../../styles/FilterBar.jsx';
+
 export default function FilterBar(props) {
   const {
-    searchChange,
+    searchChange
   } = props;
 
   return (
-    <input
-      type="text"
-      placeholder="filter"
-      onChange={searchChange}
-    />
+    <>
+      <FilterWrapper>
+        <input
+          type="text"
+          placeholder="filter actions by name..."
+          onChange={searchChange}
+        />
+      </FilterWrapper>
+    </>
   );
 }
