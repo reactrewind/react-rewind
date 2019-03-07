@@ -48,8 +48,7 @@ class App extends Component {
     };
 
     this.portToExtension = null;
-    this.portToBackground = null;
-
+    
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
@@ -78,15 +77,6 @@ class App extends Component {
         }));
       });
     });
-
-    // we create a port to communicate with the background. This is used
-    // to start recording the dispatches. We need to tell the background
-    // to start intercepting the requests on this page and refresh it.
-    this.portToBackground = chrome.runtime.connect({
-      name: 'DevTools-Background Connection',
-    });
-    this.portToBackground.onDisconnect.addListener(() => console.log('Disconecting from bg...'));
-  }
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
