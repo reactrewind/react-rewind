@@ -7,7 +7,7 @@ export const EventsNavWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 33px;
+  height: 35px;
   border-bottom: 1px solid #484C54;
   color: white;
 `;
@@ -41,7 +41,7 @@ export const Buttons = styled.div`
     &.active {
     color: white;
     background-color: #4F5A65;
-    /* border-bottom: 3px solid white; */
+    /* border-bottom: 3px solid hotpink; */
     }
   }
 
