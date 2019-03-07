@@ -10,15 +10,15 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
   });
 });
 
-// The App on the devtools panel start a connection so that it can
-// tell us when to start intercepting the script requests.
-chrome.runtime.onConnect.addListener((port) => {
-  port.onMessage.addListener(msg => console.log(msg));
-});
 
+let interceptedUrl = '';
 function handleRequest(request) {
+  // TODO: filter the request from the webRequest call. 
+  if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
+
+  console.log('intercepting... ', request);
   if (request.type === 'script' && !request.url.startsWith('chrome')
-    && request.frameId === 0) {
+  && request.frameId === 0) {
     // TODO: adjust comment
     // Else we need to check wether or not this contains the react
     // library. If it does, we need to send the edit javascript to
@@ -37,12 +37,26 @@ function handleRequest(request) {
   }
 }
 
-function addScriptInterception(url) {
-  console.log('Has listener: ', chrome.webRequest.onBeforeRequest.hasListener(handleRequest));
+// The App on the devtools panel start a connection so that it can
+// tell us when to start intercepting the script requests.
+chrome.runtime.onConnect.addListener((port) => {
+  port.onMessage.addListener((msg) => {
+    if (!msg.turnOnDevtool) return;
+    interceptedUrl = msg.url;
+    addScriptInterception();
+
+    // after activating our interception script, we refresh the active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
+    });
+  });
+});
+
+function addScriptInterception() {
   chrome.webRequest.onBeforeRequest.removeListener(handleRequest);
   chrome.webRequest.onBeforeRequest.addListener(
     handleRequest,
-    { urls: [url] },
+    { urls: ['<all_urls>'] },
     ['blocking'],
   );
 }

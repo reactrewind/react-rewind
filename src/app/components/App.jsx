@@ -61,11 +61,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // *******************************************************
-    // need to impletement setState for filteredData to same value as data
-    // this.setState({ data, filteredData: data });
-    // *******************************************************
-
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
@@ -79,6 +74,7 @@ class App extends Component {
         };
         this.setState((state) => ({
           data: [...state.data, newData],
+          filteredData: [...state.data, newData],
         }));
       });
     });
@@ -114,8 +110,16 @@ class App extends Component {
       isRecording: !state.isRecording,
     }));
 
-    backgroundPort.postMessage({
-      active: true
+    // we query the active window so we can send it to the background script
+    // so it knows on which URL to run our devtool.
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const { url } = tabs[0];
+
+      // backgroundPort is a variable made avaiable by the devtools.js 
+      backgroundPort.postMessage({
+        turnOnDevtool: true,
+        url,
+      });
     });
   }
 
