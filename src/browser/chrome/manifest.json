@@ -7,7 +7,7 @@
     "default_popup": "page_action.html"
   },
   "background": {
-    "scripts": ["bundle.js"]
+    "scripts": ["devtools_bundle/bg_bundle.js"]
   },
   "content_scripts": [
     {
