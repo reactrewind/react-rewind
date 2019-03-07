@@ -60,6 +60,11 @@ class App extends Component {
   }
 
   componentDidMount() {
+    // *******************************************************
+    // need to impletement setState for filteredData to same value as data
+    // this.setState({ data, filteredData: data });
+    // *******************************************************
+
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
