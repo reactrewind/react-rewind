@@ -11,7 +11,6 @@ import Details from '../container/Details.jsx';
 
 // styled components
 import { Wrapper } from '../styles/SplitPane.jsx';
-import stateDifference from './stateDifference.jsx';
 
 // import from styled components to create global styles
 const GlobalStyle = createGlobalStyle`

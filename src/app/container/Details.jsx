@@ -21,6 +21,7 @@ export default function Details(props) {
     action, id, actionState,
   } = props;
 
+  
   return (
     <Router>
       <>
