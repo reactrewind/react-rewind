@@ -47,7 +47,8 @@ class App extends Component {
       isPlayingIndex: 0,
     };
 
-    this.port = null;
+    this.portToExtension = null;
+    
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
@@ -67,7 +68,7 @@ class App extends Component {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
-      this.port = portFromExtension;
+      this.portToExtension = portFromExtension;
 
       portFromExtension.onMessage.addListener((msg) => {
         const newData = {
@@ -76,11 +77,11 @@ class App extends Component {
           id: this.state.data.length,
         };
         this.setState((state) => ({
-          data: [...state.data, newData]
+          data: [...state.data, newData],
+          filteredData: [...state.data, newData],
         }));
       });
     });
-  }
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
@@ -103,6 +104,18 @@ class App extends Component {
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
+
+    // we query the active window so we can send it to the background script
+    // so it knows on which URL to run our devtool.
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const { url } = tabs[0];
+
+      // backgroundPort is a variable made avaiable by the devtools.js 
+      backgroundPort.postMessage({
+        turnOnDevtool: true,
+        url,
+      });
+    });
   }
 
   actionInPlay() {
@@ -170,8 +183,8 @@ class App extends Component {
 
   // function to travel to the FUTURE
   toTheFuture() {
-    if (!this.port) return console.error('No connection on stored port.');
-    this.port.postMessage({
+    if (!this.portToExtension) return console.error('No connection on stored port.');
+    this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'forward',
     });
@@ -179,8 +192,8 @@ class App extends Component {
 
   // function to travel to the PAST
   toThePast() {
-    if (!this.port) return console.error('No connection on stored port.');
-    this.port.postMessage({
+    if (!this.portToExtension) return console.error('No connection on stored port.');
+    this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'backwards',
     });

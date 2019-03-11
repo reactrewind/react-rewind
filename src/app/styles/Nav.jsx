@@ -7,6 +7,7 @@ export const EventsNavWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-height: 33px;
   height: 35px;
   border-bottom: 1px solid #484C54;
   color: white;
