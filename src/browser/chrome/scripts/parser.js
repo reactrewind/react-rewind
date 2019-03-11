@@ -1,4 +1,3 @@
-// function parser() {
 const esprima = require('esprima');
 const estraverse = require('estraverse');
 const escodegen = require('escodegen');
@@ -49,45 +48,30 @@ function commitAllHostEffectsReplacement() {
       }
     }
 
-    // The following switch statement is only concerned about placement,
-    // updates, and deletions. To avoid needing to add a case for every
-    // possible bitmap value, we remove the secondary effects from the
-    // effect tag and switch on that value.
     let primaryEffectTag = effectTag & (Placement | Update | Deletion);
     switch (primaryEffectTag) {
       case Placement:
       {
-        // editbyme
         timeTravelTracker.push({
             primaryEffectTag: 'PLACEMENT',
             effect: _.cloneDeep(nextEffect),
         });
 
         commitPlacement(nextEffect);
-        // Clear the "placement" from effect tag so that we know that this is inserted, before
-        // any life-cycles like componentDidMount gets called.
-        // TODO: findDOMNode doesn't rely on this any more but isMounted
-        // does and isMounted is deprecated anyway so we should be able
-        // to kill this.
+
         nextEffect.effectTag &= ~Placement;
         break;
       }
       case PlacementAndUpdate:
       {
-        // Placement
         commitPlacement(nextEffect);
-        // Clear the "placement" from effect tag so that we know that this is inserted, before
-        // any life-cycles like componentDidMount gets called.
         nextEffect.effectTag &= ~Placement;
-
-        // Update
         let _current = nextEffect.alternate;
         commitWork(_current, nextEffect);
         break;
       }
       case Update:
       {
-        // editbyme
         timeTravelTracker.push({
           primaryEffectTag: 'UPDATE',
           effect: _.cloneDeep(nextEffect),
@@ -100,7 +84,6 @@ function commitAllHostEffectsReplacement() {
       }
       case Deletion:
       {
-        // editbyme
         timeTravelTracker.push({
           primaryEffectTag: 'DELETION',
           effect: _.cloneDeep(nextEffect),
@@ -117,6 +100,16 @@ function commitAllHostEffectsReplacement() {
     resetCurrentFiber();
   }
 }
+// regex method signatures
+const uRsig = new RegExp(/\b(useReducer)\b\(reducer, initialArg, init\)/);
+const cAHEsig = new RegExp(/\b(function)\b\s\b(commitAllHostEffects)\b\(\)/, 'g');
+
+// get replacer method bodies
+let injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+let injectableUseReducerString = escodegen.generate(injectableUseReducer.body[0].body);
+
+let injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+let injectableCommitAllHostEffectsString = escodegen.generate(injectableCommitAllHostEffects.body[0].body);
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
@@ -132,17 +125,47 @@ function traverseTree(replacementNode, functionName, ast) {
     },
   });
 }
-
+function stringParser(string, newBody, methodSig) {
+  let stack = [];
+  const foundMethod = methodSig.test(string);
+  let oldBody = '';
+  let output;
+  for (let i = methodSig.lastIndex; i < string.length; i++) {
+    if (foundMethod) {
+      if (string[i] === '{') {
+        stack.push(string[i]);
+      }
+      if (stack.length > 0 && stack[stack.length - 1] === '{' && string[i] === '}') {
+        stack.pop();
+        oldBody += string[i];
+        output = string.replace(oldBody, newBody);
+        break;
+      }
+      if (stack.length > 0) {
+        oldBody += string[i];
+      }
+    }
+  }
+  return output;
+}
 const parseAndGenerate = (codeString) => {
   if (codeString.search('react') !== -1) {
-    const ast = esprima.parseModule(codeString);
-    
+    let ast;
+    try {
+      ast = esprima.parseModule(codeString);
+    } catch (error) {
+      // esprima throws parsing error webpack devtool setting generates code
+      console.log('unable to use esprima parser');
+      codeString = stringParser(codeString, injectableUseReducerString, uRsig);
+      codeString = stringParser(codeString, injectableCommitAllHostEffectsString, cAHEsig);
+      return codeString;
+    }
     // parse react-dom code
-    const injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+    injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
     traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
 
     // parse react code
-    const injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+    injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
     traverseTree(injectableUseReducer, 'useReducer', ast);
     
     const code = escodegen.generate(ast);
