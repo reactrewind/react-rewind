@@ -1,13 +1,22 @@
 const parseAndGenerate = require('./scripts/parser');
 
+let portToDevtools;
+const msgsToPanel = [];
+
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
 
+  // active page action button and inject extension.js
   chrome.pageAction.show(tab.id);
   chrome.tabs.executeScript(null, {
     file: 'extension.js',
     runAt: 'document_end',
   });
+
+  // refresh devtool panel everytime we refresh webpage
+  // console.log('port: ', portToDevtools);
+  // if (portToDevtools) portToDevtools.postMessage({ action: 'refresh_devtool' });
+  // else msgsToPanel.push({ action: 'refresh_devtool' });
 });
 
 
@@ -29,7 +38,6 @@ function handleRequest(request) {
     const syncRequest = new XMLHttpRequest();
     syncRequest.open('GET', request.url, false);
     syncRequest.send(null);
-    console.log(`Status: ${syncRequest.status} - Size of response: ${syncRequest.responseText.length}`);
 
     sendMessageToContent(parseAndGenerate(syncRequest.responseText));
 
@@ -40,6 +48,18 @@ function handleRequest(request) {
 // The App on the devtools panel start a connection so that it can
 // tell us when to start intercepting the script requests.
 chrome.runtime.onConnect.addListener((port) => {
+  portToDevtools = port;
+
+  // if (msgsToPanel.length > 0) {
+  //   for (let msg of msgsToPanel) port.postMessage(msg);
+  // }
+  // we change the port to null when we disconnect, so that when we refresh
+  // the page by start recording, we can check if (!port) and not refresh
+  // the devtools page.
+  port.onDisconnect.addListener(() => {
+    portToDevtools = null;
+  });
+
   port.onMessage.addListener((msg) => {
     if (!msg.turnOnDevtool) return;
     interceptedUrl = msg.url;
@@ -64,7 +84,6 @@ function addScriptInterception() {
 let reqIndex = 0;
 function sendMessageToContent(codeString) {
   const index = reqIndex++;
-  console.log(`Sending request ${index}.`);
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { codeString, index });
   });
