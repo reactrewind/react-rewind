@@ -3,10 +3,14 @@ import { createGlobalStyle } from 'styled-components';
 
 // containers
 import SplitPane from '../container/SplitPane.jsx';
+import TimeSlider from '../container/TimeSlider.jsx';
 
 // left pane = events, right pane = details
 import Events from '../container/Events.jsx';
 import Details from '../container/Details.jsx';
+
+// styled components
+import { Wrapper } from '../styles/SplitPane.jsx';
 
 // import from styled components to create global styles
 const GlobalStyle = createGlobalStyle`
@@ -30,31 +34,41 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       data: [],
+      searchField: '',
+      filteredData: [],
       isPlaying: false,
       isRecording: false,
+      isPlayingIndex: 0,
     };
-    this.port = null;
-    this.isPlayingIndex = 0;
+
+    this.portToExtension = null;
+    
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
     this.setIsPlaying = this.setIsPlaying.bind(this);
     this.setIsRecording = this.setIsRecording.bind(this);
     this.actionInPlay = this.actionInPlay.bind(this);
+    this.handleBarChange = this.handleBarChange.bind(this);
+    this.searchChange = this.searchChange.bind(this);
   }
 
   componentDidMount() {
+    // *******************************************************
+    // need to impletement setState for filteredData to same value as data
+    // this.setState({ data, filteredData: data });
+    // *******************************************************
+
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
-      this.port = portFromExtension;
+      this.portToExtension = portFromExtension;
 
       portFromExtension.onMessage.addListener((msg) => {
         const newData = {
@@ -63,16 +77,16 @@ class App extends Component {
           id: this.state.data.length,
         };
         this.setState((state) => ({
-          data: [...state.data, newData]
+          data: [...state.data, newData],
+          filteredData: [...state.data, newData],
         }));
       });
     });
-  }
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.isPlayingIndex === this.state.data.length - 1) {
-      this.isPlayingIndex = 0;
+    if (this.state.isPlayingIndex > this.state.data.length - 1) {
+      this.setState({ isPlayingIndex: 0 });
     }
 
     let { isPlaying } = this.state;
@@ -90,17 +104,32 @@ class App extends Component {
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
+
+    // we query the active window so we can send it to the background script
+    // so it knows on which URL to run our devtool.
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const { url } = tabs[0];
+
+      // backgroundPort is a variable made avaiable by the devtools.js 
+      backgroundPort.postMessage({
+        turnOnDevtool: true,
+        url,
+      });
+    });
   }
 
   actionInPlay() {
-    this.isPlayingIndex++;
+    let { isPlayingIndex } = this.state;
+    if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
 
-    const { id, action, state } = this.state.data[this.isPlayingIndex];
+    this.setState({ isPlayingIndex: isPlayingIndex + 1 });
+    const { id, action, state } = this.state.data[isPlayingIndex + 1];
+
     setTimeout(() => {
       this.setState((prev, props) => {
-        return { ...prev, id, action, state }
+        return { ...prev, id, action, state };
       });
-      if (this.state.isPlaying && this.isPlayingIndex < this.state.data.length - 1) {
+      if (this.state.isPlaying && isPlayingIndex + 1 < this.state.data.length - 1) {
         this.actionInPlay();
       } else {
         this.setState({ isPlaying: false });
@@ -121,11 +150,41 @@ class App extends Component {
     });
   }
 
+  // filter search bar results
+  searchChange(e) {
+    const { data } = this.state;
+    
+    // grab user entry from filter bar
+    const compareSearchValue = e.target.value;
+
+    // set state with compare value
+    this.setState({ searchField: compareSearchValue })
+
+    // match results from our filter entry to data
+    const actions = data.filter(function(item) {
+      const type = item.action.type.toLowerCase();
+      return type.includes(compareSearchValue.toLowerCase());
+    });
+    this.setState({ filteredData: actions });
+  }
+
+  // time travel bar change
+  handleBarChange(e) {
+    const { data } = this.state;
+    const { id, action, state } = data[e.target.value];
+
+    this.setState({
+      id,
+      action,
+      state,
+      isPlayingIndex: parseInt(e.target.value),
+    });
+  }
 
   // function to travel to the FUTURE
   toTheFuture() {
-    if (!this.port) return console.error('No connection on stored port.');
-    this.port.postMessage({
+    if (!this.portToExtension) return console.error('No connection on stored port.');
+    this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'forward',
     });
@@ -133,14 +192,15 @@ class App extends Component {
 
   // function to travel to the PAST
   toThePast() {
-    if (!this.port) return console.error('No connection on stored port.');
-    this.port.postMessage({
+    if (!this.portToExtension) return console.error('No connection on stored port.');
+    this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'backwards',
     });
   }
 
   render() {
+    console.log(this.state.isPlayingIndex);
     const {
       action,
       id,
@@ -150,35 +210,45 @@ class App extends Component {
       isPlaying,
       setIsRecording,
       isRecording,
+      filteredData,
     } = this.state;
 
     return (
       <>
         <GlobalStyle />
-        <SplitPane
-          left={
-            (
-              <Events
-                data={data} 
-                addAction={this.addActionToView}
-                toTheFuture={this.toTheFuture}
-                toThePast={this.toThePast}
-                isPlaying={isPlaying}
-                isRecording={isRecording}
-                setIsPlaying={this.setIsPlaying}
-                setIsRecording={this.setIsRecording}
-                activeEventId={id}
-              />
-            )}
-          right={
-            (
-              <Details
-                action={action}
-                id={id}
-                actionState={state}
-              />
-            )}
-        />
+        <Wrapper>
+          <SplitPane
+            left={
+              (
+                <Events
+                  data={data}
+                  addAction={this.addActionToView}
+                  activeEventId={id}
+                  searchChange={this.searchChange}
+                  filteredData={filteredData}
+                />
+              )}
+            right={
+              (
+                <Details
+                  action={action}
+                  id={id}
+                  actionState={state}
+                />
+              )}
+          />
+          <TimeSlider
+            data={data}
+            toTheFuture={this.toTheFuture}
+            toThePast={this.toThePast}
+            isPlaying={isPlaying}
+            isPlayingIndex={this.state.isPlayingIndex}
+            isRecording={isRecording}
+            setIsPlaying={this.setIsPlaying}
+            setIsRecording={this.setIsRecording}
+            handleBarChange={this.handleBarChange}
+          />
+        </Wrapper>
       </>
     );
   }

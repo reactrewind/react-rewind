@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint \"*/**/*.{js,jsx}\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle_bg": "browserify src/browser/chrome/background.js -o src/browser/chrome/devtools_bundle/bg_bundle.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,8 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.14.1",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-react": "^7.12.4"
+    "eslint-plugin-react": "^7.12.4",
+    "watchify": "^3.11.1"
   },
   "dependencies": {
     "escodegen": "^1.11.1",
@@ -25,8 +27,6 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "esprima": "^4.0.1",
     "estraverse": "^4.2.0",
-    "lodash": "^4.17.11",
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1"
+    "lodash": "^4.17.11"
   }
 }

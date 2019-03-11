@@ -7,10 +7,13 @@ import EventCreator from './EventCreator.jsx';
 import { EventsWrapper } from '../../styles/Events.jsx';
 
 export default function Events(props) {
-  const { data, activeEventId } = props;
+  const { data,
+    activeEventId,
+    filteredData,
+  } = props;
   return (
     <EventsWrapper>
-      {data.map((e, i) => (
+      {filteredData.map((e, i) => (
         <EventCreator
           selectedEvent={activeEventId === e.id ? 'true' : 'false'}
           action={e.action.type}
