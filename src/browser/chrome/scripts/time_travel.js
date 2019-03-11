@@ -36,14 +36,6 @@ let root = null;
 const timeTravelLList = new DoublyLinkedList();
 
 function timeTravel(direction) {
-  console.log('calling time travel...');
-  // if (timeTravelTrackerIndex === null) {
-  //   // First time we call this function. We need to remove the PLACEMENT entry
-  //   // from position [0]. This is originated from the initial mount of the App.
-  //   timeTravelTracker = timeTravelTracker.slice(1);
-  //   timeTravelTrackerIndex = timeTravelTracker.length - 1;
-  //   root = getRootContainerInstance(timeTravelTracker[0].effect);
-  // }
   if (!root) {
     root = getRootContainerInstance(timeTravelLList.current.value.effect);
     timeTravelLList.current = timeTravelLList.tail;
@@ -78,7 +70,7 @@ function timeTravel(direction) {
         // if we are moving forwards, we need to commitWork() the same
         // way the function was originally called.
         if (diff === 1) {
-          commitWork(current, effect);
+          commitWork(_.cloneDeep(current), _.cloneDeep(effect));
           break;
         }
 
@@ -100,16 +92,16 @@ function timeTravel(direction) {
 
           const currentCopy = _.cloneDeep(current);
           currentCopy.updateQueue = payload;
-          commitWork(effect, currentCopy);
+          commitWork(_.cloneDeep(effect), currentCopy);
           break;
         }
 
-        commitWork(effect, current);
+        commitWork(_.cloneDeep(effect), _.cloneDeep(current));
         break;
       }
       case 'PLACEMENT': {
         if (diff === 1) {
-          commitPlacement(effect);
+          commitPlacement(_.cloneDeep(effect));
         } else {
           // commitDeletion() will call unmountHostComponents(), which recursively
           // deletes all host nodes from the parent. This means that
@@ -127,7 +119,7 @@ function timeTravel(direction) {
           const effectCopy = _.cloneDeep(effect);
           commitDeletion(effectCopy);
         } else {
-          commitPlacement(effect);
+          commitPlacement(_.cloneDeep(effect));
         }
         break;
       }

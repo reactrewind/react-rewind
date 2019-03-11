@@ -1,4 +1,4 @@
-import React, { useContext, Component } from 'react';
+import React, { Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
 // containers
@@ -48,7 +48,7 @@ class App extends Component {
     };
 
     this.portToExtension = null;
-    
+
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
     this.toThePast = this.toThePast.bind(this);
@@ -82,6 +82,7 @@ class App extends Component {
         }));
       });
     });
+  }
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
@@ -120,17 +121,19 @@ class App extends Component {
 
   actionInPlay() {
     let { isPlayingIndex } = this.state;
-    if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
+    const { isPlaying, data } = this.state;
+
+    if (isPlayingIndex >= data.length - 1) isPlayingIndex = 0;
 
     this.setState({ isPlayingIndex: isPlayingIndex + 1 });
-    const { id, action, state } = this.state.data[isPlayingIndex + 1];
-    this.toThePast();
+    const { id, action, state } = data[isPlayingIndex + 1];
+    this.toTheFuture();
 
     setTimeout(() => {
       this.setState((prev, props) => {
         return { ...prev, id, action, state };
       });
-      if (this.state.isPlaying && isPlayingIndex + 1 < this.state.data.length - 1) {
+      if (isPlaying && isPlayingIndex + 1 < data.length - 1) {
         this.actionInPlay();
       } else {
         this.setState({ isPlaying: false });
@@ -201,7 +204,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.isPlayingIndex);
     const {
       action,
       id,

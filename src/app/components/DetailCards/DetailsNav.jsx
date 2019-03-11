@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-
-let NavLink = require('react-router-dom').NavLink;
-
+import React from 'react';
 // styled component imports
 import { Buttons, Button, DetailsNavWrapper } from '../../styles/Nav.jsx';
 
+const { NavLink } = require('react-router-dom');
 
 export default function RightNav(props) {
   return (
