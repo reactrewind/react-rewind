@@ -11,12 +11,13 @@ import Details from '../container/Details.jsx';
 
 // styled components
 import { Wrapper } from '../styles/SplitPane.jsx';
+import stateDifference from './stateDifference.jsx';
 
 // import from styled components to create global styles
 const GlobalStyle = createGlobalStyle`
   html {
     box-sizing: border-box;
-    font-size: 10px;
+    font-size: 10px;i
     height: 100%;
     width: 100%;
   }
