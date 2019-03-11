@@ -28,9 +28,9 @@ export const LeftPane = styled.div`
 `;
 
 // wrapper for details (right hand side)
+// UPDATED
 export const RightPane = styled.div`
   color: white;
   background-color: #2A2E3A;
-  height: 100%;
   width: 57%;
 `;
