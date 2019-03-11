@@ -1,44 +1,76 @@
-let timeTravelTracker = [];
-let timeTravelTrackerIndex = null;
+class DoublyLinkedListNode {
+  constructor(value, next = null, prev = null) {
+    this.value = value;
+    this.next = next;
+    this.prev = prev;
+  }
+}
+
+class DoublyLinkedList {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+    this.current = null;
+  }
+
+  append(fiberNode) {
+    const newDLLNode = new DoublyLinkedListNode(fiberNode);
+
+    if (!this.head) {
+      this.head = newDLLNode;
+      this.tail = newDLLNode;
+      this.current = newDLLNode;
+    } else {
+      this.tail.next = newDLLNode;
+      newDLLNode.prev = this.tail;
+      this.tail = newDLLNode;
+    }
+
+    return this;
+  }
+}
+
+
 const funcStorage = {};
-let root;
+let root = null;
+const timeTravelLList = new DoublyLinkedList();
 
 function timeTravel(direction) {
-  if (timeTravelTrackerIndex === null) {
-    // First time we call this function. We need to remove the PLACEMENT entry
-    // from position [0]. This is originated from the initial mount of the App.
-    timeTravelTracker = timeTravelTracker.slice(1);
-    timeTravelTrackerIndex = timeTravelTracker.length - 1;
-    root = getRootContainerInstance(timeTravelTracker[0].effect);
+  if (!root) {
+    root = getRootContainerInstance(timeTravelLList.current.value.effect);
+    timeTravelLList.current = timeTravelLList.tail;
   }
 
   const diff = direction === 'forward' ? 1 : -1;
 
-  if ((diff === 1 && timeTravelTrackerIndex === timeTravelTracker.length - 1)
-    || (diff === -1 && timeTravelTrackerIndex === 0)) {
+  if ((diff === 1 && timeTravelLList.current.next === null)
+    || (diff === -1 && timeTravelLList.current.prev === null)) {
     return;
   }
 
-  if (diff === 1 && timeTravelTrackerIndex !== 0) timeTravelTrackerIndex += 1;
+  if (diff === 1 && timeTravelLList.current !== timeTravelLList.tail) {
+    timeTravelLList.current = timeTravelLList.current.next;
+  }
+
+  const {
+    commitDeletion,
+    commitPlacement,
+    commitWork,
+    prepareUpdate,
+  } = funcStorage;
 
   while (true) {
-    const {
-      commitDeletion,
-      commitPlacement,
-      commitWork,
-      prepareUpdate,
-    } = funcStorage;
-    console.log('doing work for ', timeTravelTrackerIndex);
-    const { primaryEffectTag, effect } = timeTravelTracker[timeTravelTrackerIndex];
+    // console.log('doing work for ', timeTravelTrackerIndex);
+    const { primaryEffectTag, effect } = timeTravelLList.current.value;
 
     switch(primaryEffectTag) {
       case 'UPDATE': {
-        const { current } = timeTravelTracker[timeTravelTrackerIndex];
+        const { current } = timeTravelLList.current.value;
         
         // if we are moving forwards, we need to commitWork() the same
         // way the function was originally called.
         if (diff === 1) {
-          commitWork(current, effect);
+          commitWork(_.cloneDeep(current), _.cloneDeep(effect));
           break;
         }
 
@@ -60,16 +92,16 @@ function timeTravel(direction) {
 
           const currentCopy = _.cloneDeep(current);
           currentCopy.updateQueue = payload;
-          commitWork(effect, currentCopy);
+          commitWork(_.cloneDeep(effect), currentCopy);
           break;
         }
 
-        commitWork(effect, current);
+        commitWork(_.cloneDeep(effect), _.cloneDeep(current));
         break;
       }
       case 'PLACEMENT': {
         if (diff === 1) {
-          commitPlacement(effect);
+          commitPlacement(_.cloneDeep(effect));
         } else {
           // commitDeletion() will call unmountHostComponents(), which recursively
           // deletes all host nodes from the parent. This means that
@@ -77,7 +109,6 @@ function timeTravel(direction) {
           // on commitPlacement() on this same node. This is why we need to clone
           // the effect fiberNode and call commitDeletion() on that instead.
           const effectCopy = _.cloneDeep(effect);
-          console.log(effectCopy);
           commitDeletion(effectCopy);
         }
         break;
@@ -88,7 +119,7 @@ function timeTravel(direction) {
           const effectCopy = _.cloneDeep(effect);
           commitDeletion(effectCopy);
         } else {
-          commitPlacement(effect);
+          commitPlacement(_.cloneDeep(effect));
         }
         break;
       }
@@ -97,15 +128,17 @@ function timeTravel(direction) {
     }
 
     // break points for the while loop
-    if (timeTravelTrackerIndex + diff === timeTravelTracker.length
-      || (diff === -1 && timeTravelTrackerIndex === 0)
-      || (diff === 1 && timeTravelTracker[timeTravelTrackerIndex].actionDispatched)) {
+    if ((diff === -1 && timeTravelLList.current.prev === null)
+      || (diff === 1 && timeTravelLList.current.next === null)
+      || (diff === 1 && timeTravelLList.current.value.actionDispatched)) {
       return;
     }
 
-    timeTravelTrackerIndex += diff;
+    timeTravelLList.current = diff === 1
+      ? timeTravelLList.current.next
+      : timeTravelLList.current.prev;
 
-    if (diff === -1 && timeTravelTracker[timeTravelTrackerIndex].actionDispatched) {
+    if (diff === -1 && timeTravelLList.current.value.actionDispatched) {
       return;
     }
   }

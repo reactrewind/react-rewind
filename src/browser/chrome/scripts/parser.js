@@ -8,7 +8,7 @@ function useReducerReplacement() {
   const dispatcher = resolveDispatcher();
   function reducerWithTracker(state, action) {
     const newState = reducer(state, action);
-    timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
+    timeTravelLList.tail.value.actionDispatched = true;
     window.postMessage({
       type: 'DISPATCH',
       data: {
@@ -52,7 +52,8 @@ function commitAllHostEffectsReplacement() {
     switch (primaryEffectTag) {
       case Placement:
       {
-        timeTravelTracker.push({
+        // editbyme
+        timeTravelLList.append({
             primaryEffectTag: 'PLACEMENT',
             effect: _.cloneDeep(nextEffect),
         });
@@ -72,7 +73,8 @@ function commitAllHostEffectsReplacement() {
       }
       case Update:
       {
-        timeTravelTracker.push({
+        // editbyme
+        timeTravelLList.append({
           primaryEffectTag: 'UPDATE',
           effect: _.cloneDeep(nextEffect),
           current: _.cloneDeep(nextEffect.alternate),
@@ -84,7 +86,8 @@ function commitAllHostEffectsReplacement() {
       }
       case Deletion:
       {
-        timeTravelTracker.push({
+        // editbyme
+        timeTravelLList.append({
           primaryEffectTag: 'DELETION',
           effect: _.cloneDeep(nextEffect),
         });
@@ -167,7 +170,7 @@ const parseAndGenerate = (codeString) => {
     // parse react code
     injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
     traverseTree(injectableUseReducer, 'useReducer', ast);
-    
+
     const code = escodegen.generate(ast);
     console.log('returning code.');
     return code;
