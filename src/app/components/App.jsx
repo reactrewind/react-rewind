@@ -172,15 +172,23 @@ class App extends Component {
 
   // time travel bar change
   handleBarChange(e) {
-    const { data } = this.state;
+    const { data, isPlayingIndex } = this.state;
     const { id, action, state } = data[e.target.value];
-
+    // forward or past
+    const currentIsPlayingIndex = e.target.value;
+    const forward = currentIsPlayingIndex > isPlayingIndex;
     this.setState({
       id,
       action,
       state,
-      isPlayingIndex: parseInt(e.target.value),
+      isPlayingIndex: parseInt(currentIsPlayingIndex),
     });
+    // Displays to screen
+    if (forward) {
+      this.toTheFuture();
+    } else {
+      this.toThePast();
+    }
   }
 
   // function to travel to the FUTURE
