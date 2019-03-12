@@ -60,11 +60,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // *******************************************************
-    // need to impletement setState for filteredData to same value as data
-    // this.setState({ data, filteredData: data });
-    // *******************************************************
-
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((portFromExtension) => {
@@ -79,10 +74,13 @@ class App extends Component {
         this.setState((state) => ({
           data: [...state.data, newData],
           filteredData: [...state.data, newData],
+          isPlayingIndex: state.data.length - 1,
         }));
       });
     });
   }
+
+
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
@@ -192,6 +190,20 @@ class App extends Component {
       type: 'TIMETRAVEL',
       direction: 'forward',
     });
+
+    // if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
+
+    const { data, isPlayingIndex } = this.state;
+    const { id, action, state } = data[isPlayingIndex + 1];
+    this.setState(prev => ({
+      ...prev,
+      id,
+      action,
+      state,
+      isPlayingIndex: isPlayingIndex + 1,
+    }));
+
+    console.log('isPlayingIndex', this.state.isPlayingIndex);
   }
 
   // function to travel to the PAST
@@ -201,6 +213,21 @@ class App extends Component {
       type: 'TIMETRAVEL',
       direction: 'backwards',
     });
+
+    const { data, isPlayingIndex } = this.state;
+
+    if (isPlayingIndex === 0) { 
+      console.log('is playingIdx in toThePast is 0');
+    } else {
+      const { id, action, state } = data[isPlayingIndex - 1];
+      this.setState(prev => ({
+        ...prev,
+        id,
+        action,
+        state,
+        isPlayingIndex: isPlayingIndex - 1,
+      }));
+    }
   }
 
   render() {
