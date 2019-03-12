@@ -16,7 +16,7 @@ import { Wrapper } from '../styles/SplitPane.jsx';
 const GlobalStyle = createGlobalStyle`
   html {
     box-sizing: border-box;
-    font-size: 10px;i
+    font-size: 10px;
     height: 100%;
     width: 100%;
   }
