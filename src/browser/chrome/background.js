@@ -1,7 +1,5 @@
 const parseAndGenerate = require('./scripts/parser');
-
-let portToDevtools;
-const msgsToPanel = [];
+const ports = [];
 
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
@@ -13,16 +11,18 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
     runAt: 'document_end',
   });
 
-  // refresh devtool panel everytime we refresh webpage
-  // console.log('port: ', portToDevtools);
-  // if (portToDevtools) portToDevtools.postMessage({ action: 'refresh_devtool' });
-  // else msgsToPanel.push({ action: 'refresh_devtool' });
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    notifyPorts(
+      { action: 'refresh_devtool', tabId: tabs[0].id },
+      'devtools',
+    );
+  });
 });
 
 
 let interceptedUrl = '';
 function handleRequest(request) {
-  // TODO: filter the request from the webRequest call. 
+  // TODO: filter the request from the webRequest call.
   if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
 
   console.log('intercepting... ', request);
@@ -48,27 +48,20 @@ function handleRequest(request) {
 // The App on the devtools panel start a connection so that it can
 // tell us when to start intercepting the script requests.
 chrome.runtime.onConnect.addListener((port) => {
-  portToDevtools = port;
-
-  // if (msgsToPanel.length > 0) {
-  //   for (let msg of msgsToPanel) port.postMessage(msg);
-  // }
-  // we change the port to null when we disconnect, so that when we refresh
-  // the page by start recording, we can check if (!port) and not refresh
-  // the devtools page.
-  port.onDisconnect.addListener(() => {
-    portToDevtools = null;
-  });
+  if (ports) ports.push(port);
 
   port.onMessage.addListener((msg) => {
-    if (!msg.turnOnDevtool) return;
-    interceptedUrl = msg.url;
-    addScriptInterception();
+    if (msg.turnOnDevtool) {
+      interceptedUrl = msg.url;
+      addScriptInterception();
 
-    // after activating our interception script, we refresh the active tab
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
-    });
+      // after activating our interception script, we refresh the active tab
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
+      });
+    } else {
+      console.log('Got a msg not turnOnDevtool: ', msg);
+    }
   });
 });
 
@@ -86,5 +79,16 @@ function sendMessageToContent(codeString) {
   const index = reqIndex++;
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { codeString, index });
+  });
+}
+
+function notifyPorts(msg, portName) {
+  ports.forEach((port) => {
+    if (portName && (port.name !== portName)) return;
+    try {
+      port.postMessage(msg);
+    } catch {
+      console.log('notifyPorts has found some closed conections.');
+    }
   });
 }
