@@ -82,11 +82,13 @@ class App extends Component {
         if (newDataActionType.includes(searchField.toLowerCase())) {
           this.setState(state => ({
             data: [...state.data, newData],
-            filteredData: [...state.data, newData],
+            isPlayingIndex: state.data.length,
+            filteredData: [...state.filteredData, newData],
           }));
         } else {
           this.setState(state => ({
             data: [...state.data, newData],
+            isPlayingIndex: state.data.length,
           }));
         }
       });
@@ -106,8 +108,8 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.state.isPlayingIndex > this.state.data.length - 1) {
-      this.setState({ isPlayingIndex: 0 });
+    if (this.state.isPlayingIndex >= this.state.data.length - 1) {
+      return;
     }
 
     let { isPlaying } = this.state;
@@ -142,20 +144,11 @@ class App extends Component {
   }
 
   actionInPlay() {
-    let { isPlayingIndex } = this.state;
-    const { isPlaying, data } = this.state;
-
-    if (isPlayingIndex >= data.length - 1) isPlayingIndex = 0;
-
-    this.setState({ isPlayingIndex: isPlayingIndex + 1 });
-    const { id, action, state } = data[isPlayingIndex + 1];
-    this.toTheFuture();
+    const { data, isPlayingIndex } = this.state;
 
     setTimeout(() => {
-      this.setState((prev, props) => {
-        return { ...prev, id, action, state };
-      });
-      if (isPlaying && isPlayingIndex + 1 < data.length - 1) {
+      this.toTheFuture();
+      if (this.state.isPlaying && isPlayingIndex + 1 < data.length - 1) {
         this.actionInPlay();
       } else {
         this.setState({ isPlaying: false });
@@ -289,6 +282,7 @@ class App extends Component {
       setIsRecording,
       isRecording,
       filteredData,
+      searchField,
     } = this.state;
 
     return (
@@ -304,6 +298,7 @@ class App extends Component {
                   activeEventId={id}
                   searchChange={this.searchChange}
                   filteredData={filteredData}
+                  searchField={searchField}
                 />
               )}
             right={
