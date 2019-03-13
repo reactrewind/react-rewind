@@ -33,21 +33,3 @@ export const EventTimeDiv = styled.div`
   color: ${props => props.selectedEvent === 'false' ? 'white' : "white"};
   border-radius: 5px;
 `;
-
-// wrapper for previous and next buttons
-export const PreviousNextWrapper = styled.div`
-  padding-top: 4%;
-  padding-bottom: 4%;
-  display: flex;
-  justify-content: space-evenly;
-`;
-
-// button for previous and next (copied from EventTimeDiv for trial)
-export const PrevNextButton = styled.div`
-  cursor: pointer;
-  width: 25%;
-  text-align: center;
-  background-color: ${props => props.selectedEvent === 'false' ? '#484C54' : "#3C444F"};
-  color: ${props => props.selectedEvent === 'false' ? 'white' : "white"};
-  border-radius: 5px;
-`;
