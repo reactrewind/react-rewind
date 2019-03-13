@@ -65,21 +65,31 @@ class App extends Component {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((port) => {
-      if (port.name === 'injected-app') {
-        this.portToExtension = port;
+      if (port.name !== 'injected-app') return;
 
-        port.onMessage.addListener((msg) => {
-          const newData = {
-            action: msg.action,
-            state: msg.state,
-            id: this.state.data.length,
-          };
-          this.setState((state) => ({
+      this.portToExtension = port;
+
+      port.onMessage.addListener((msg) => {
+        const newData = {
+          action: msg.action,
+          state: msg.state,
+          id: this.state.data.length,
+        };
+
+        const { searchField } = this.state;
+        const newDataActionType = newData.action.type.toLowerCase();
+
+        if (newDataActionType.includes(searchField.toLowerCase())) {
+          this.setState(state => ({
             data: [...state.data, newData],
             filteredData: [...state.data, newData],
           }));
-        });
-      }
+        } else {
+          this.setState(state => ({
+            data: [...state.data, newData],
+          }));
+        }
+      });
     });
 
     // We listen to the message from devtools.js (sent originally from 
@@ -93,8 +103,6 @@ class App extends Component {
       if (tabId === devtoolsId) this.resetApp();
     });
   }
-
-
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
