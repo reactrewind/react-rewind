@@ -217,6 +217,9 @@ class App extends Component {
 
   // function to travel to the FUTURE
   toTheFuture() {
+    const { data, isPlayingIndex } = this.state;
+    if (isPlayingIndex === data.length - 1) return;
+
     if (!this.portToExtension) return console.error('No connection on stored port.');
     this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
@@ -225,7 +228,6 @@ class App extends Component {
 
     // if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
 
-    const { data, isPlayingIndex } = this.state;
     const { id, action, state } = data[isPlayingIndex + 1];
     this.setState(prev => ({
       ...prev,
@@ -240,26 +242,23 @@ class App extends Component {
 
   // function to travel to the PAST
   toThePast() {
+    const { data, isPlayingIndex } = this.state;
+    if (isPlayingIndex === 0) return;
+
     if (!this.portToExtension) return console.error('No connection on stored port.');
     this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'backwards',
     });
 
-    const { data, isPlayingIndex } = this.state;
-
-    if (isPlayingIndex === 0) { 
-      console.log('is playingIdx in toThePast is 0');
-    } else {
-      const { id, action, state } = data[isPlayingIndex - 1];
-      this.setState(prev => ({
-        ...prev,
-        id,
-        action,
-        state,
-        isPlayingIndex: isPlayingIndex - 1,
-      }));
-    }
+    const { id, action, state } = data[isPlayingIndex - 1];
+    this.setState(prev => ({
+      ...prev,
+      id,
+      action,
+      state,
+      isPlayingIndex: isPlayingIndex - 1,
+    }));
   }
 
   resetApp() {
