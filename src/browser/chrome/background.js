@@ -25,7 +25,6 @@ function handleRequest(request) {
   // TODO: filter the request from the webRequest call.
   if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
 
-  console.log('intercepting... ', request);
   if (request.type === 'script' && !request.url.startsWith('chrome')
   && request.frameId === 0) {
     // TODO: adjust comment
@@ -72,6 +71,59 @@ function addScriptInterception() {
     { urls: ['<all_urls>'] },
     ['blocking'],
   );
+
+  // chrome.webRequest.onBeforeSendHeaders.addListener(
+  //   (request) => {
+  //     if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
+
+  //     if (request.type !== 'script' || request.url.startsWith('chrome')
+  //       || request.frameId !== 0) return;
+
+  //     request.requestHeaders.push({
+  //       name: 'Access-Control-Allow-Credentials',
+  //       value: '*',
+  //     });
+
+  //     request.requestHeaders.push({
+  //       name: 'Accept',
+  //       value: 'application/javascript',
+  //     });
+
+  //     request.requestHeaders.push({
+  //       name: 'ABC',
+  //       value: 'abc',
+  //     });
+
+  //     for (let i = 0; i < request.requestHeaders.length; i++) {
+  //       const header = request.requestHeaders[i];
+  //       if (header.name === 'Origin') {
+  //         console.log('found one');
+  //         delete request.requestHeaders[i];
+  //       }
+  //     }
+
+  //     console.log('intercepting fom beforesendheaders:  ', request);
+  //   },
+  //   { urls: ['<all_urls>'] },
+  //   ['blocking', 'requestHeaders'],
+  // );
+
+  // chrome.webRequest.onHeadersReceived.addListener((request) => {
+  //   if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
+
+  //   if (request.type !== 'script' || request.url.startsWith('chrome')
+  //     || request.frameId !== 0) return;
+
+  //   const syncRequest = new XMLHttpRequest();
+  //   syncRequest.open('GET', request.url, false);
+  //   syncRequest.send(null);
+
+  //   console.log('Got req onHeadersReceived!!!! ', request);
+
+  //   return { redirectUrl: 'data:application/javascript; charset=utf-8,'.concat(syncRequest.responseText) };
+  // },
+  // { urls: ['<all_urls>'] },
+  // ['blocking', 'responseHeaders']);
 }
 
 let reqIndex = 0;

@@ -48,6 +48,7 @@ class App extends Component {
     };
 
     this.portToExtension = null;
+    this.justStartedRecording = false;
 
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
@@ -108,9 +109,11 @@ class App extends Component {
     }
   }
 
-  // functionality to change 'record' button to 'pause'
   setIsRecording() {
-    console.log('setIsRecording:', this.state.isRecording)
+    // This variable will prevent the app from refreshing when we refresh 
+    // the userpage. 
+    this.justStartedRecording = true;
+
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
@@ -213,6 +216,12 @@ class App extends Component {
   }
 
   resetApp() {
+    if (this.justStartedRecording) {
+      console.log('not reseting...');
+      this.justStartedRecording = false;
+      return;
+    }
+    console.log('reseting...');
     this.setState({
       data: [],
       searchField: '',
