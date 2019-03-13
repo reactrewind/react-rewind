@@ -93,6 +93,8 @@ class App extends Component {
     });
   }
 
+
+
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
     if (this.state.isPlayingIndex > this.state.data.length - 1) {
@@ -183,15 +185,23 @@ class App extends Component {
 
   // time travel bar change
   handleBarChange(e) {
-    const { data } = this.state;
+    const { data, isPlayingIndex } = this.state;
     const { id, action, state } = data[e.target.value];
-
+    // forward or past
+    const currentIsPlayingIndex = e.target.value;
+    const forward = currentIsPlayingIndex > isPlayingIndex;
     this.setState({
       id,
       action,
       state,
-      isPlayingIndex: parseInt(e.target.value),
+      isPlayingIndex: parseInt(currentIsPlayingIndex),
     });
+    // Displays to screen
+    if (forward) {
+      this.toTheFuture();
+    } else {
+      this.toThePast();
+    }
   }
 
   // function to travel to the FUTURE
@@ -201,6 +211,20 @@ class App extends Component {
       type: 'TIMETRAVEL',
       direction: 'forward',
     });
+
+    // if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
+
+    const { data, isPlayingIndex } = this.state;
+    const { id, action, state } = data[isPlayingIndex + 1];
+    this.setState(prev => ({
+      ...prev,
+      id,
+      action,
+      state,
+      isPlayingIndex: isPlayingIndex + 1,
+    }));
+
+    console.log('isPlayingIndex', this.state.isPlayingIndex);
   }
 
   // function to travel to the PAST
@@ -210,6 +234,21 @@ class App extends Component {
       type: 'TIMETRAVEL',
       direction: 'backwards',
     });
+
+    const { data, isPlayingIndex } = this.state;
+
+    if (isPlayingIndex === 0) { 
+      console.log('is playingIdx in toThePast is 0');
+    } else {
+      const { id, action, state } = data[isPlayingIndex - 1];
+      this.setState(prev => ({
+        ...prev,
+        id,
+        action,
+        state,
+        isPlayingIndex: isPlayingIndex - 1,
+      }));
+    }
   }
 
   resetApp() {
