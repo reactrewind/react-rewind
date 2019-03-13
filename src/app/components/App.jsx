@@ -74,7 +74,7 @@ class App extends Component {
         this.setState((state) => ({
           data: [...state.data, newData],
           filteredData: [...state.data, newData],
-          isPlayingIndex: state.data.length - 1,
+          isPlayingIndex: state.data.length,
         }));
       });
     });
@@ -84,13 +84,12 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.state.isPlayingIndex > this.state.data.length - 1) {
-      this.setState({ isPlayingIndex: 0 });
+    if (this.state.isPlayingIndex >= this.state.data.length) {
+      this.setState(prevState => ({ ...prevState, isPlayingIndex: 0 }));
     }
 
     let { isPlaying } = this.state;
-    isPlaying = !isPlaying;
-    this.setState({ isPlaying });
+    this.setState(prevState => ({ ...prevState, isPlaying: !prevState.isPlaying }));
 
     if (isPlaying) {
       this.actionInPlay();
@@ -123,7 +122,7 @@ class App extends Component {
 
     if (isPlayingIndex >= data.length - 1) isPlayingIndex = 0;
 
-    this.setState({ isPlayingIndex: isPlayingIndex + 1 });
+    this.setState(prevState => ({ ...prevState, isPlayingIndex: isPlayingIndex + 1 }));
     const { id, action, state } = data[isPlayingIndex + 1];
     this.toTheFuture();
 
@@ -134,7 +133,7 @@ class App extends Component {
       if (isPlaying && isPlayingIndex + 1 < data.length - 1) {
         this.actionInPlay();
       } else {
-        this.setState({ isPlaying: false });
+        this.setState(prevState => ({ ...prevState, isPlaying: false }));
       }
     }, 1000);
   }
@@ -199,7 +198,7 @@ class App extends Component {
       direction: 'forward',
     });
 
-    // if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
+    if (this.state.isPlayingIndex >= this.state.data.length - 1) this.setState(prev => ({ ...prev, isPlayingIndex: 0 }));
 
     const { data, isPlayingIndex } = this.state;
     const { id, action, state } = data[isPlayingIndex + 1];
