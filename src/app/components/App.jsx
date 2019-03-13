@@ -57,26 +57,39 @@ class App extends Component {
     this.actionInPlay = this.actionInPlay.bind(this);
     this.handleBarChange = this.handleBarChange.bind(this);
     this.searchChange = this.searchChange.bind(this);
+    this.resetApp = this.resetApp.bind(this);
   }
 
   componentDidMount() {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
-    chrome.runtime.onConnect.addListener((portFromExtension) => {
-      this.portToExtension = portFromExtension;
+    chrome.runtime.onConnect.addListener((port) => {
+      if (port.name === 'injected-app') {
+        this.portToExtension = port;
 
-      portFromExtension.onMessage.addListener((msg) => {
-        const newData = {
-          action: msg.action,
-          state: msg.state,
-          id: this.state.data.length,
-        };
-        this.setState((state) => ({
-          data: [...state.data, newData],
-          filteredData: [...state.data, newData],
-          isPlayingIndex: state.data.length - 1,
-        }));
-      });
+        port.onMessage.addListener((msg) => {
+          const newData = {
+            action: msg.action,
+            state: msg.state,
+            id: this.state.data.length,
+          };
+          this.setState((state) => ({
+            data: [...state.data, newData],
+            filteredData: [...state.data, newData],
+          }));
+        });
+      }
+    });
+
+    // We listen to the message from devtools.js (sent originally from 
+    // background) to refresh our App whenever the user refreshes the webpage.
+    // The msg from background will come with the ID of the current tab.
+    // We only want to refresh our App instance of that specific tab.
+    window.addEventListener('message', (msg) => {
+      const { action, tabId } = msg.data;
+      if (action !== 'refresh_devtool') return;
+      const devtoolsId = chrome.devtools.inspectedWindow.tabId;
+      if (tabId === devtoolsId) this.resetApp();
     });
   }
 
@@ -236,6 +249,17 @@ class App extends Component {
         isPlayingIndex: isPlayingIndex - 1,
       }));
     }
+  }
+
+  resetApp() {
+    this.setState({
+      data: [],
+      searchField: '',
+      filteredData: [],
+      isPlaying: false,
+      isRecording: false,
+      isPlayingIndex: 0,
+    });
   }
 
   render() {
