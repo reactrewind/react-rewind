@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+// styled component imports
+import { Buttons, Button, DetailsNavWrapper } from '../../styles/Nav.jsx';
 
-var Link = require('react-router-dom').Link;
-var NavLink = require('react-router-dom').NavLink;
-//styled component imports
-import { Buttons, Button, DetailsNavWrapper, Ul } from '../../styles/Nav.jsx';
-
+const { NavLink } = require('react-router-dom');
 
 export default function RightNav(props) {
   return (
     <>
       <DetailsNavWrapper>
         <Buttons>
-          <NavLink activeClassName='active' to='/'>
+          <NavLink exact activeClassName='active' to='/'>
             <Button>actions</Button>
           </NavLink>
           <NavLink activeClassName='active' to='/effects'>

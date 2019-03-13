@@ -2,10 +2,8 @@ import styled from 'styled-components';
 
 // the entire events display wrapper
 export const EventsWrapper = styled.div`
-  min-height: 100px;
-  max-height: 200px;
+  height: -webkit-fill-available;
   overflow: auto;
-  border-bottom: 1px solid white;
 `;
 
 // single event card
@@ -29,24 +27,6 @@ export const EventCard = styled.div`
 
 // time card on event card
 export const EventTimeDiv = styled.div`
-  width: 25%;
-  text-align: center;
-  background-color: ${props => props.selectedEvent === 'false' ? '#484C54' : "#3C444F"};
-  color: ${props => props.selectedEvent === 'false' ? 'white' : "white"};
-  border-radius: 5px;
-`;
-
-// wrapper for previous and next buttons
-export const PreviousNextWrapper = styled.div`
-  padding-top: 4%;
-  padding-bottom: 4%;
-  display: flex;
-  justify-content: space-evenly;
-`;
-
-// button for previous and next (copied from EventTimeDiv for trial)
-export const PrevNextButton = styled.div`
-  cursor: pointer;
   width: 25%;
   text-align: center;
   background-color: ${props => props.selectedEvent === 'false' ? '#484C54' : "#3C444F"};

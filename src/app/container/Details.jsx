@@ -15,13 +15,13 @@ import StateDisplay from '../components/DetailCards/State/StateDisplay.jsx'
 
 
 export default function Details(props) {
-
   // destructuring required info that's being passed down from App.jsx
   // passing these props onto children
   const {
     action, id, actionState,
   } = props;
 
+  
   return (
     <Router>
       <>
