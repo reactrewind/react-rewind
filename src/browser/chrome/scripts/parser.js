@@ -35,27 +35,27 @@ function commitAllHostEffectsReplacement() {
     }
     recordEffect();
 
-    let {effectTag} = nextEffect;
+    const { effectTag } = nextEffect;
 
     if (effectTag & ContentReset) {
       commitResetTextContent(nextEffect);
     }
 
     if (effectTag & Ref) {
-      let current$$1 = nextEffect.alternate;
+      const current$$1 = nextEffect.alternate;
       if (current$$1 !== null) {
         commitDetachRef(current$$1);
       }
     }
 
-    let primaryEffectTag = effectTag & (Placement | Update | Deletion);
+    const primaryEffectTag = effectTag & (Placement | Update | Deletion);
     switch (primaryEffectTag) {
       case Placement:
       {
         // editbyme
         timeTravelLList.append({
-            primaryEffectTag: 'PLACEMENT',
-            effect: _.cloneDeep(nextEffect),
+          primaryEffectTag: 'PLACEMENT',
+          effect: _.cloneDeep(nextEffect),
         });
 
         commitPlacement(nextEffect);
@@ -67,7 +67,7 @@ function commitAllHostEffectsReplacement() {
       {
         commitPlacement(nextEffect);
         nextEffect.effectTag &= ~Placement;
-        let _current = nextEffect.alternate;
+        const _current = nextEffect.alternate;
         commitWork(_current, nextEffect);
         break;
       }
@@ -80,7 +80,7 @@ function commitAllHostEffectsReplacement() {
           current: _.cloneDeep(nextEffect.alternate),
         });
 
-        let _current2 = nextEffect.alternate;
+        const _current2 = nextEffect.alternate;
         commitWork(_current2, nextEffect);
         break;
       }
@@ -106,17 +106,22 @@ function commitAllHostEffectsReplacement() {
 // regex method signatures
 const uRsig = new RegExp(/\b(useReducer)\b\(reducer, initialArg, init\)/);
 const cAHEsig = new RegExp(/\b(function)\b\s\b(commitAllHostEffects)\b\(\)/, 'g');
-
-// get replacer method bodies
+// method names
+const USEREDUCER = 'useReducer';
+const COMMITALLHOSTEFFECTS = 'commitAllHostEffects';
+// library key inside of bundle
+const reactLibraryPath = './node_modules/react/cjs/react.development.js';
+const reactDOMLibraryPath = './node_modules/react-dom/cjs/react-dom.development.js';
+// get replacer method 
 let injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-let injectableUseReducerString = escodegen.generate(injectableUseReducer.body[0].body);
+const injectableUseReducerString = escodegen.generate(injectableUseReducer.body[0].body);
 
 let injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-let injectableCommitAllHostEffectsString = escodegen.generate(injectableCommitAllHostEffects.body[0].body);
+const injectableCommitAllHostEffectsString = escodegen.generate(injectableCommitAllHostEffects.body[0].body);
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
-  console.log('traverse called');
+  console.log('unbundled traverse called');
   estraverse.replace(ast, {
     enter(node) {
       if (node.type === 'FunctionDeclaration') {
@@ -129,7 +134,7 @@ function traverseTree(replacementNode, functionName, ast) {
   });
 }
 function stringParser(string, newBody, methodSig) {
-  let stack = [];
+  const stack = [];
   const foundMethod = methodSig.test(string);
   let oldBody = '';
   let output;
@@ -151,32 +156,62 @@ function stringParser(string, newBody, methodSig) {
   }
   return output;
 }
+function traverseBundledTree(replacementNode, functionName, ast, library) {
+  estraverse.replace(ast, {
+    enter(node) {
+      if (node.key && node.key.value === library) {
+        if (node.value.body.body[1].type === 'ExpressionStatement') {
+          if (node.value.body.body[1].expression.callee.name === 'eval') {
+           // create new ast 
+            // const reactLib = esprima.parseScript(node.value.body.body[1].expression.arguments[0].value, { range: true, tokens: true, comment: true });
+            const reactLib = esprima.parseScript(node.value.body.body[1].expression.arguments[0].value);
+             estraverse.replace(reactLib, {
+              enter(libNode) {
+                if (libNode.type === 'FunctionDeclaration') {
+                  if (libNode.id.name === functionName) {
+                    libNode.body = replacementNode.body[0].body;
+                    console.log('From parser. REPLACING!', libNode.id.name);
+                    // return libNode;
+                  }
+                }
+              },
+            });
+            // reactLib = escodegen.attachComments(reactLib, reactLib.comments, reactLib.tokens);
+            node.value.body.body[1].expression.arguments = escodegen.generate(reactLib);
+            console.log('generated');
+            // node.value.body.body[1].expression.arguments[0].value = escodegen.generate(reactLib, { comment: true });
+          // node.value.body.body[1].expression.arguments[0].value = stringParser(node.value.body.body[1].expression.arguments[0].value, replacementNode, functionName);
+          }
+        }
+      }
+    },
+  });
+}
+
 const parseAndGenerate = (codeString) => {
   if (codeString.search('react') !== -1) {
-    let ast;
-    try {
-      ast = esprima.parseModule(codeString);
-    } catch (error) {
-      // esprima throws parsing error webpack devtool setting generates code
-      console.log('unable to use esprima parser');
-      codeString = stringParser(codeString, injectableUseReducerString, uRsig);
-      codeString = stringParser(codeString, injectableCommitAllHostEffectsString, cAHEsig);
-      return codeString;
+    const ast = esprima.parseModule(codeString);
+    // Webpack bundle is wrapped in function call
+    if (ast.body[0].expression.type === 'CallExpression') {
+      //  if (ast.body[0].expression.arguments[0].properties[6].key.value ==='./node_modules/react/cjs/react.development.js'){
+      //   const reactLib = esprima.parseModule(ast.body[0].expression.arguments[0].properties[6].value.body.body[1].expression.arguments[0].value);
+      // .value at end is a string
+      traverseBundledTree(injectableUseReducer, USEREDUCER, ast, reactLibraryPath);
+      traverseBundledTree(injectableCommitAllHostEffects, COMMITALLHOSTEFFECTS, ast, reactDOMLibraryPath);
+      //  traverseBundledTree(injectableUseReducerString, uRsig, ast, reactLibraryPath);
+      //  traverseBundledTree(injectableCommitAllHostEffectsString, cAHEsig, ast, reactDOMLibraryPath);
+    } else {
+      // parse react-dom code
+      injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+      traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
+
+      // parse react code
+      injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+      traverseTree(injectableUseReducer, 'useReducer', ast);
     }
-    // parse react-dom code
-    injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-    traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
-
-    // parse react code
-    injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-    traverseTree(injectableUseReducer, 'useReducer', ast);
-
     const code = escodegen.generate(ast);
     console.log('returning code.');
     return code;
   }
-  console.log('returning string.');
-  return codeString;
 };
-
 module.exports = parseAndGenerate;
