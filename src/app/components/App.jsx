@@ -45,6 +45,9 @@ class App extends Component {
       isPlaying: false,
       isRecording: false,
       isPlayingIndex: 0,
+      id: 0,
+      action: {},
+      state: {},
     };
 
     this.portToExtension = null;
@@ -123,7 +126,7 @@ class App extends Component {
 
   setIsRecording() {
     // This variable will prevent the app from refreshing when we refresh 
-    // the userpage. 
+    // the userpage.
     this.justStartedRecording = true;
 
     this.setState(state => ({
@@ -219,8 +222,6 @@ class App extends Component {
       direction: 'forward',
     });
 
-    // if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
-
     const { id, action, state } = data[isPlayingIndex + 1];
     this.setState(prev => ({
       ...prev,
@@ -268,6 +269,9 @@ class App extends Component {
       isPlaying: false,
       isRecording: false,
       isPlayingIndex: 0,
+      id: 0,
+      action: {},
+      state: {},
     });
   }
 
@@ -277,12 +281,11 @@ class App extends Component {
       id,
       state,
       data,
-      setIsPlaying,
       isPlaying,
-      setIsRecording,
       isRecording,
       filteredData,
       searchField,
+      isPlayingIndex,
     } = this.state;
 
     return (
@@ -315,7 +318,7 @@ class App extends Component {
             toTheFuture={this.toTheFuture}
             toThePast={this.toThePast}
             isPlaying={isPlaying}
-            isPlayingIndex={this.state.isPlayingIndex}
+            isPlayingIndex={isPlayingIndex}
             isRecording={isRecording}
             setIsPlaying={this.setIsPlaying}
             setIsRecording={this.setIsRecording}

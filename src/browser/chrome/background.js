@@ -1,5 +1,6 @@
-const parseAndGenerate = require('./scripts/parser');
-const ports = [];
+const parseAndGenerate = require('./scripts/parser2');
+
+let ports = [];
 
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
@@ -12,6 +13,7 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
   });
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    interceptedUrl = '';
     notifyPorts(
       { action: 'refresh_devtool', tabId: tabs[0].id },
       'devtools',
@@ -26,7 +28,9 @@ function handleRequest(request) {
   if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
 
   if (request.type === 'script' && !request.url.startsWith('chrome')
-  && request.frameId === 0) {
+    && request.frameId === 0 && ((request.url.slice(-3) === '.js')
+    || (request.url.slice(-4) === '.jsx'))) {
+    console.log('Got one: ', request.url, request);
     // TODO: adjust comment
     // Else we need to check wether or not this contains the react
     // library. If it does, we need to send the edit javascript to
@@ -40,6 +44,9 @@ function handleRequest(request) {
 
     sendMessageToContent(parseAndGenerate(syncRequest.responseText));
 
+    // const code = encodeURIComponent(parseAndGenerate(syncRequest.responseText));
+    // console.log('CODE - LENGTH: ', code.length);
+    // return { redirectUrl: 'data:application/javascript; charset=utf-8,'.concat(code) };
     return { redirectUrl: 'javascript:' };
   }
 }
@@ -78,52 +85,50 @@ function addScriptInterception() {
 
   //     if (request.type !== 'script' || request.url.startsWith('chrome')
   //       || request.frameId !== 0) return;
+  //     console.log('onBeforeHeaders = ', request.url);
+  //     // request.requestHeaders.push({
+  //     //   name: 'Access-Control-Allow-Credentials',
+  //     //   value: '*',
+  //     // });
 
-  //     request.requestHeaders.push({
-  //       name: 'Access-Control-Allow-Credentials',
-  //       value: '*',
-  //     });
+  //     // request.requestHeaders.push({
+  //     //   name: 'Accept',
+  //     //   value: 'application/javascript',
+  //     // });
 
-  //     request.requestHeaders.push({
-  //       name: 'Accept',
-  //       value: 'application/javascript',
-  //     });
-
-  //     request.requestHeaders.push({
-  //       name: 'ABC',
-  //       value: 'abc',
-  //     });
-
+  //     // request.requestHeaders.push({
+  //     //   name: 'ABC',
+  //     //   value: 'abc',
+  //     // });
+  //     const filteredHeaders = [{name: 'TTT', value: 'OK'}];
   //     for (let i = 0; i < request.requestHeaders.length; i++) {
   //       const header = request.requestHeaders[i];
-  //       if (header.name === 'Origin') {
-  //         console.log('found one');
-  //         delete request.requestHeaders[i];
+  //       if (header.name !== 'Origin') {
+  //         filteredHeaders.push({
+  //           name: header.name,
+  //           value: header.value,
+  //         });
   //       }
   //     }
-
-  //     console.log('intercepting fom beforesendheaders:  ', request);
+  //     return { requestHeaders: filteredHeaders };
   //   },
   //   { urls: ['<all_urls>'] },
   //   ['blocking', 'requestHeaders'],
   // );
 
-  // chrome.webRequest.onHeadersReceived.addListener((request) => {
-  //   if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
+  // chrome.webRequest.onSendHeaders.addListener(
+  //   (request) => {
+  //     console.log('onSendHeaders: ', request);
+  //   },
+  //   { urls: ['<all_urls>'] },
+  //   ['requestHeaders'],
+  // );
 
-  //   if (request.type !== 'script' || request.url.startsWith('chrome')
-  //     || request.frameId !== 0) return;
-
-  //   const syncRequest = new XMLHttpRequest();
-  //   syncRequest.open('GET', request.url, false);
-  //   syncRequest.send(null);
-
-  //   console.log('Got req onHeadersReceived!!!! ', request);
-
-  //   return { redirectUrl: 'data:application/javascript; charset=utf-8,'.concat(syncRequest.responseText) };
-  // },
-  // { urls: ['<all_urls>'] },
-  // ['blocking', 'responseHeaders']);
+  // chrome.webRequest.onHeadersReceived.addListener(
+  //   handleRequest,
+  //   { urls: ['<all_urls>'] },
+  //   ['blocking', 'responseHeaders'],
+  // );
 }
 
 let reqIndex = 0;
@@ -135,12 +140,17 @@ function sendMessageToContent(codeString) {
 }
 
 function notifyPorts(msg, portName) {
-  ports.forEach((port) => {
-    if (portName && (port.name !== portName)) return;
-    try {
-      port.postMessage(msg);
-    } catch {
-      console.log('notifyPorts has found some closed conections.');
+  let index = 0;
+  while (index < ports.length) {
+    if (portName && (ports[index].name !== portName)) index++;
+    else {
+      try {
+        ports[index].postMessage(msg);
+        index++;
+      } catch {
+        // remove closed port from array
+        ports = [...ports.slice(0, index), ...ports.slice(index + 1)];
+      }
     }
-  });
+  }
 }

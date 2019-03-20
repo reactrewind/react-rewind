@@ -27,6 +27,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "esprima": "^4.0.1",
     "estraverse": "^4.2.0",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "lodash.clonedeep": "^4.5.0"
   }
 }
