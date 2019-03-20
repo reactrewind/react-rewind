@@ -12,12 +12,13 @@ function useReducerReplacement() {
       type: 'DISPATCH',
       data: {
         state: newState,
+        prevState: state,
         action,
       },
     });
     return newState;
   }
-  return dispatcher.useReducer(reducerWithTracker, initialState, initialAction);
+  return dispatcher.useReducer(reducerWithTracker, arguments[1], arguments[2]);
 }
 
 function commitAllHostEffectsReplacement() {
@@ -177,5 +178,6 @@ const parseAndGenerate = (codeString) => {
     console.log('returning code.');
     return code;
   }
+  return codeString;
 };
 module.exports = parseAndGenerate;

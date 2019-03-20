@@ -21,11 +21,13 @@
     "tabs",
     "storage",
     "webRequest",
-    "webRequestBlocking"
+    "webRequestBlocking",
+    "webNavigation"
   ],
   "web_accessible_resources": [
     "scripts/linked_list.js",
-    "scripts/time_travel.js"
+    "scripts/time_travel.js",
+    "scripts/deepclone_bundle.js"
   ],
   "devtools_page": "devtools.html"
 }
