@@ -17,7 +17,7 @@ function useReducerReplacement() {
     });
     return newState;
   }
-  return dispatcher.useReducer(reducerWithTracker, initialArg, init);
+  return dispatcher.useReducer(reducerWithTracker, initialState, initialAction);
 }
 
 function commitAllHostEffectsReplacement() {
