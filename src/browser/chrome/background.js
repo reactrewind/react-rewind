@@ -2,8 +2,8 @@ const parseAndGenerate = require('./scripts/parser');
 const injectBundleStr = require('./scripts/inject_bundle');
 
 let ports = [];
-let interceptedUrl = '';
 let reqIndex = 0;
+const interceptedURLs = {};
 
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
@@ -15,19 +15,26 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
     runAt: 'document_end',
   });
 
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    interceptedUrl = '';
+  if (interceptedURLs.hasOwnProperty(tab.url)) {
+    delete interceptedURLs[tab.url];
     reqIndex = 0;
-    notifyPorts(
-      { action: 'refresh_devtool', tabId: tabs[0].id },
-      'devtools',
-    );
-  });
+  }
+
+  notifyPorts(
+    { action: 'refresh_devtool', tabId: tab.id },
+    'devtools',
+  );
+
 });
 
 function handleRequest(request) {
   // TODO: filter the request from the webRequest call.
-  if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
+  // We check wether or not the URL should have its requests intercepted
+  let shouldInterceptUrl = false;
+  Object.keys(interceptedURLs).forEach((url) => {
+    if (url.startsWith(request.initiator)) shouldInterceptUrl = true;
+  });
+  if (!shouldInterceptUrl) return { cancel: false };
 
   if (request.type === 'script' && !request.url.startsWith('chrome')
     && request.frameId === 0 && ((request.url.slice(-3) === '.js')
@@ -57,18 +64,15 @@ chrome.runtime.onConnect.addListener((port) => {
   if (ports) ports.push(port);
 
   port.onMessage.addListener((msg) => {
-    if (msg.turnOnDevtool) {
-      interceptedUrl = msg.url;
-      addScriptInterception();
+    if (!msg.turnOnDevtool) return;
+    console.log('got turn on: ', msg);
+    interceptedURLs[msg.url] = true;
+    addScriptInterception();
 
-      // after activating our interception script, we refresh the active tab
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
-      });
-
-    } else {
-      console.log('Got a msg not turnOnDevtool: ', msg);
-    }
+    // after activating our interception script, we refresh the active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
+    });
   });
 });
 

@@ -71,7 +71,7 @@ class App extends Component {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((port) => {
-      if (port.name !== 'injected-app') return;
+      if (port.name !== 'injected-app' || this.portToExtension) return;
 
       this.portToExtension = port;
 
@@ -90,7 +90,7 @@ class App extends Component {
         // search field
         const { searchField } = this.state;
         const newDataActionType = newData.action.type.toLowerCase();
-        
+
         // get the date everytime an action fires and add it to state
 
         const eventTime = Date.now();
@@ -140,18 +140,18 @@ class App extends Component {
   }
 
   setIsRecording() {
-    // This variable will prevent the app from refreshing when we refresh 
-    // the userpage.
-    this.justStartedRecording = true;
-    const { isRecording, hasInjectedScript } = this.state;
+    const { isRecording } = this.state;
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
 
     // if we are hitting the pause or re-starting the record session
-    if (isRecording || hasInjectedScript) return;
+    if (isRecording || this.hasInjectedScript) return;
 
-    this.setState({ hasInjectedScript: true });
+    // This variable will prevent the app from refreshing when we refresh 
+    // the userpage.
+    this.justStartedRecording = true;
+    this.hasInjectedScript = true;
 
     // we query the active window so we can send it to the background script
     // so it knows on which URL to run our devtool.
@@ -260,6 +260,7 @@ class App extends Component {
     if (isPlayingIndex === 0) return;
 
     if (!this.portToExtension) return console.error('No connection on stored port.');
+    console.log('Sending timetravel PAST to extension');    
     this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'backwards',
@@ -278,11 +279,12 @@ class App extends Component {
 
   resetApp() {
     if (this.justStartedRecording) {
-      console.log('not reseting...');
       this.justStartedRecording = false;
       return;
     }
-    console.log('reseting...');
+
+    this.justStartedRecording = false;
+    this.hasInjectedScript = false;
     this.setState({
       data: [],
       searchField: '',
@@ -294,6 +296,7 @@ class App extends Component {
       action: {},
       state: {},
       prevState: {},
+      eventTimes: [],
     });
   }
 
