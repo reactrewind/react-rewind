@@ -1,6 +1,9 @@
-const parseAndGenerate = require('./scripts/parser2');
+const parseAndGenerate = require('./scripts/parser');
+const injectBundleStr = require('./scripts/inject_bundle');
 
 let ports = [];
+let interceptedUrl = '';
+let reqIndex = 0;
 
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
@@ -14,6 +17,7 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     interceptedUrl = '';
+    reqIndex = 0;
     notifyPorts(
       { action: 'refresh_devtool', tabId: tabs[0].id },
       'devtools',
@@ -21,8 +25,6 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
   });
 });
 
-
-let interceptedUrl = '';
 function handleRequest(request) {
   // TODO: filter the request from the webRequest call.
   if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
@@ -30,23 +32,21 @@ function handleRequest(request) {
   if (request.type === 'script' && !request.url.startsWith('chrome')
     && request.frameId === 0 && ((request.url.slice(-3) === '.js')
     || (request.url.slice(-4) === '.jsx'))) {
-    console.log('Got one: ', request.url, request);
-    // TODO: adjust comment
-    // Else we need to check wether or not this contains the react
-    // library. If it does, we need to send the edit javascript to
-    // out content script, so it can inject into the page. If it doesnt,
-    // we need to send the url to our content script so that it can
-    // add it to the page <script src=URL> AND add it to our cache, so
-    // that when we intercept it, we dont block it.
+    // If we just started intercepting requests, we want to add our injected
+    // bundle into the page.
+    if (reqIndex === 0) sendMessageToContent(injectBundleStr);
+
+    // To guarantee that the scripts are gonna be executed in order, we are
+    // gonna intercept EVERY request that is made. Then we have to download the
+    // script SYNC'ly since the webRequest API doesn't handle async. Last we
+    // send it to our content script to inject it back into the page. Either
+    // the React library with the extended functionality or the untouched script.
     const syncRequest = new XMLHttpRequest();
     syncRequest.open('GET', request.url, false);
     syncRequest.send(null);
 
     sendMessageToContent(parseAndGenerate(syncRequest.responseText));
 
-    // const code = encodeURIComponent(parseAndGenerate(syncRequest.responseText));
-    // console.log('CODE - LENGTH: ', code.length);
-    // return { redirectUrl: 'data:application/javascript; charset=utf-8,'.concat(code) };
     return { redirectUrl: 'javascript:' };
   }
 }
@@ -65,6 +65,7 @@ chrome.runtime.onConnect.addListener((port) => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
       });
+
     } else {
       console.log('Got a msg not turnOnDevtool: ', msg);
     }
@@ -78,60 +79,8 @@ function addScriptInterception() {
     { urls: ['<all_urls>'] },
     ['blocking'],
   );
-
-  // chrome.webRequest.onBeforeSendHeaders.addListener(
-  //   (request) => {
-  //     if (!interceptedUrl.startsWith(request.initiator)) return { cancel: false };
-
-  //     if (request.type !== 'script' || request.url.startsWith('chrome')
-  //       || request.frameId !== 0) return;
-  //     console.log('onBeforeHeaders = ', request.url);
-  //     // request.requestHeaders.push({
-  //     //   name: 'Access-Control-Allow-Credentials',
-  //     //   value: '*',
-  //     // });
-
-  //     // request.requestHeaders.push({
-  //     //   name: 'Accept',
-  //     //   value: 'application/javascript',
-  //     // });
-
-  //     // request.requestHeaders.push({
-  //     //   name: 'ABC',
-  //     //   value: 'abc',
-  //     // });
-  //     const filteredHeaders = [{name: 'TTT', value: 'OK'}];
-  //     for (let i = 0; i < request.requestHeaders.length; i++) {
-  //       const header = request.requestHeaders[i];
-  //       if (header.name !== 'Origin') {
-  //         filteredHeaders.push({
-  //           name: header.name,
-  //           value: header.value,
-  //         });
-  //       }
-  //     }
-  //     return { requestHeaders: filteredHeaders };
-  //   },
-  //   { urls: ['<all_urls>'] },
-  //   ['blocking', 'requestHeaders'],
-  // );
-
-  // chrome.webRequest.onSendHeaders.addListener(
-  //   (request) => {
-  //     console.log('onSendHeaders: ', request);
-  //   },
-  //   { urls: ['<all_urls>'] },
-  //   ['requestHeaders'],
-  // );
-
-  // chrome.webRequest.onHeadersReceived.addListener(
-  //   handleRequest,
-  //   { urls: ['<all_urls>'] },
-  //   ['blocking', 'responseHeaders'],
-  // );
 }
 
-let reqIndex = 0;
 function sendMessageToContent(codeString) {
   const index = reqIndex++;
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

@@ -48,10 +48,12 @@ class App extends Component {
       id: 0,
       action: {},
       state: {},
+      prevState: {}
     };
 
     this.portToExtension = null;
     this.justStartedRecording = false;
+    this.hasInjectedScript = false;
 
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
@@ -73,9 +75,14 @@ class App extends Component {
       this.portToExtension = port;
 
       port.onMessage.addListener((msg) => {
+        // If the user paused the recording session, we return
+        const { isRecording } = this.state;
+        if (!isRecording) return;
+
         const newData = {
           action: msg.action,
           state: msg.state,
+          prevState: msg.prevState,
           id: this.state.data.length,
         };
 
@@ -111,7 +118,8 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.state.isPlayingIndex >= this.state.data.length - 1) {
+    const { isPlayingIndex, data } = this.state;
+    if (isPlayingIndex >= data.length - 1) {
       return;
     }
 
@@ -128,17 +136,22 @@ class App extends Component {
     // This variable will prevent the app from refreshing when we refresh 
     // the userpage.
     this.justStartedRecording = true;
-
+    const { isRecording, hasInjectedScript } = this.state;
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
+
+    // if we are hitting the pause or re-starting the record session
+    if (isRecording || hasInjectedScript) return;
+
+    this.setState({ hasInjectedScript: true });
 
     // we query the active window so we can send it to the background script
     // so it knows on which URL to run our devtool.
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const { url } = tabs[0];
 
-      // backgroundPort is a variable made avaiable by the devtools.js 
+      // backgroundPort is a variable made avaiable by the devtools.js
       backgroundPort.postMessage({
         turnOnDevtool: true,
         url,
@@ -147,11 +160,11 @@ class App extends Component {
   }
 
   actionInPlay() {
-    const { data, isPlayingIndex } = this.state;
+    const { data, isPlayingIndex, isPlaying } = this.state;
 
     setTimeout(() => {
       this.toTheFuture();
-      if (this.state.isPlaying && isPlayingIndex + 1 < data.length - 1) {
+      if (isPlaying && isPlayingIndex + 1 < data.length - 1) {
         this.actionInPlay();
       } else {
         this.setState({ isPlaying: false });
@@ -165,10 +178,10 @@ class App extends Component {
     const { data } = this.state;
     const actionToView = data.filter(action => e.target.id === String(action.id));
     const {
-      action, id, state,
+      action, id, state, prevState,
     } = actionToView[0];
     this.setState({
-      action, id, state,
+      action, id, state, prevState,
     });
   }
 
@@ -193,7 +206,7 @@ class App extends Component {
   // time travel bar change
   handleBarChange(e) {
     const { data, isPlayingIndex } = this.state;
-    const { id, action, state } = data[e.target.value];
+    const { id, action, state, prevState } = data[e.target.value];
     // forward or past
     const currentIsPlayingIndex = e.target.value;
     const forward = currentIsPlayingIndex > isPlayingIndex;
@@ -201,6 +214,7 @@ class App extends Component {
       id,
       action,
       state,
+      prevState,
       isPlayingIndex: parseInt(currentIsPlayingIndex),
     });
     // Displays to screen
@@ -222,16 +236,15 @@ class App extends Component {
       direction: 'forward',
     });
 
-    const { id, action, state } = data[isPlayingIndex + 1];
+    const { id, action, state, prevState } = data[isPlayingIndex + 1];
     this.setState(prev => ({
       ...prev,
       id,
       action,
       state,
+      prevState,
       isPlayingIndex: isPlayingIndex + 1,
     }));
-
-    console.log('isPlayingIndex', this.state.isPlayingIndex);
   }
 
   // function to travel to the PAST
@@ -245,12 +258,13 @@ class App extends Component {
       direction: 'backwards',
     });
 
-    const { id, action, state } = data[isPlayingIndex - 1];
+    const { id, action, state, prevState } = data[isPlayingIndex - 1];
     this.setState(prev => ({
       ...prev,
       id,
       action,
       state,
+      prevState,
       isPlayingIndex: isPlayingIndex - 1,
     }));
   }
@@ -272,6 +286,7 @@ class App extends Component {
       id: 0,
       action: {},
       state: {},
+      prevState: {},
     });
   }
 
@@ -286,6 +301,7 @@ class App extends Component {
       filteredData,
       searchField,
       isPlayingIndex,
+      prevState,
     } = this.state;
 
     return (
@@ -310,6 +326,7 @@ class App extends Component {
                   action={action}
                   id={id}
                   actionState={state}
+                  prevState={prevState}
                 />
               )}
           />

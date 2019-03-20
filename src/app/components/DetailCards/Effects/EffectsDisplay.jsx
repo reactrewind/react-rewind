@@ -1,23 +1,23 @@
 import React from 'react';
-import { DetailsWrapper } from '../../../styles/Details.jsx';
 import ReactJson from 'react-json-view';
+import { DetailsWrapper } from '../../../styles/Details.jsx';
 // functionality
 // gets difference from previous state to new state
 import stateDifference from '../../stateDifference.jsx';
 
 
 export default function Effects(props) {
-  console.log('state differnce in effects display IMPORT', stateDifference);
-  const differenceOfPrevAndNextState = stateDifference([1,2,3], [2,4, 9, 11, {'wow': 1}])
+  const { prevState, actionState } = props;
+  const differenceOfPrevAndNextState = stateDifference(prevState, actionState);
+
   return (
     <DetailsWrapper>
       <ReactJson
-        theme={'threezerotwofour'}
+        theme="threezerotwofour"
         style={{ backgroundColor: 'transparent', height: '-webkit-fill-available' }}
         displayDataTypes={false}
         src={differenceOfPrevAndNextState}
       />
     </DetailsWrapper>
-    
   );
 }
