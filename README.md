@@ -1,5 +1,5 @@
 # React Rewind : A Time Travel Debugger for React
-
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/reactrewind/react-rewind/pulls)<br/>
 A time travel debugger tool made to work with react 16.8+.
 - useReducer 
 - useState
