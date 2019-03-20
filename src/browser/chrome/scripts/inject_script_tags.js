@@ -3,32 +3,7 @@
   let lastReceivedMsgTime = null;
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.codeString) scheduleWork(msg);
-    else if (msg.injectScripts) injectScripts();
   });
-
-  function injectScripts() {
-    console.log('injecting scripts...');
-    // We add a <script> tag to the DOM with our script files as the src attribute.
-    // We need this because our content-injected scripts are executed in an "isolated
-    // world" environment. BUT for the scripts below, we want the edited-React libraries
-    // to have access to the their functionalities.
-    const linkedListScript = document.createElement('script');
-    linkedListScript.src = chrome.runtime.getURL('scripts/linked_list.js');
-    (document.head || document.documentElement).appendChild(linkedListScript);
-
-    const timeTravelScript = document.createElement('script');
-    timeTravelScript.src = chrome.runtime.getURL('scripts/time_travel.js');
-    (document.head || document.documentElement).appendChild(timeTravelScript);
-
-    const deepCloneScript = document.createElement('script');
-    deepCloneScript.src = chrome.runtime.getURL('scripts/deepclone_bundle.js');
-    (document.head || document.documentElement).appendChild(deepCloneScript);
-
-    // linkedListScript.onload = 
-    deepCloneScript.onload = timeTravelScript.onload = function removeScriptTag() {
-      this.remove();
-    };
-  } 
 
   function scheduleWork(work) {
     // We want to add the scripts to a work array. When its been 100s
@@ -59,4 +34,4 @@
       };
     }
   }
-}())
+}());
