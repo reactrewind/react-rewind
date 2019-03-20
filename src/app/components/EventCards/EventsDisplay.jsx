@@ -7,9 +7,11 @@ import EventCreator from './EventCreator.jsx';
 import { EventsWrapper } from '../../styles/Events.jsx';
 
 export default function Events(props) {
-  const { data,
+  const { 
+    data,
     activeEventId,
     filteredData,
+    eventTimes,
   } = props;
   return (
     <EventsWrapper>
@@ -18,8 +20,10 @@ export default function Events(props) {
           selectedEvent={activeEventId === e.id ? 'true' : 'false'}
           action={e.action.type}
           key={i}
+          index={i}
           id={e.id}
           addAction={props.addAction}
+          eventTimes={eventTimes}
         />
       ))}
     </EventsWrapper>

@@ -19,6 +19,7 @@ class Events extends Component {
       searchChange,
       filteredData,
       searchField,
+      eventTimes,
     } = this.props;
     return (
       <>
@@ -29,6 +30,7 @@ class Events extends Component {
           filteredData={filteredData}
           addAction={addAction}
           activeEventId={activeEventId}
+          eventTimes={eventTimes}
         />
       </>
     );
