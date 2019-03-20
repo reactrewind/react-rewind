@@ -45,6 +45,7 @@ class App extends Component {
       isPlaying: false,
       isRecording: false,
       isPlayingIndex: 0,
+      eventTimes: [],
     };
 
     this.portToExtension = null;
@@ -76,14 +77,20 @@ class App extends Component {
           id: this.state.data.length,
         };
 
+        // search field
         const { searchField } = this.state;
         const newDataActionType = newData.action.type.toLowerCase();
+        
+        // get the date everytime an action fires and add it to state
+
+        const eventTime = Date.now();
 
         if (newDataActionType.includes(searchField.toLowerCase())) {
           this.setState(state => ({
             data: [...state.data, newData],
             isPlayingIndex: state.data.length,
             filteredData: [...state.filteredData, newData],
+            eventTimes: [...state.eventTimes, eventTime],
           }));
         } else {
           this.setState(state => ({
@@ -283,6 +290,7 @@ class App extends Component {
       isRecording,
       filteredData,
       searchField,
+      eventTimes,
     } = this.state;
 
     return (
@@ -299,6 +307,7 @@ class App extends Component {
                   searchChange={this.searchChange}
                   filteredData={filteredData}
                   searchField={searchField}
+                  eventTimes={eventTimes}
                 />
               )}
             right={
@@ -326,5 +335,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;
