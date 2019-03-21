@@ -2,9 +2,11 @@
   <img src ="./images/greygreen_gg_full_350w.png" width="200"/>
 </span>
 
-# Rewind : A Time Travel Debugger for React useReducer
+# Rewind: A Time Travel Debugger for React *useReducer*
+
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br/>
-A time travel debugger for React's `useReducer` hook, designed to help engineers record and replay different states of their applications to fix bugs faster.
+
+A time travel debugger for React's `useReducer` hook, designed to help engineers fix bugs faster record and replay different states of their applications to fix bugs faster.
 Debug your app more easily by “rewinding” your session instead of having to reproduce the issue until you find the bug.
 
 - Press record and start interacting with your application
@@ -19,12 +21,12 @@ Debug your app more easily by “rewinding” your session instead of having to 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
-Your application must be using the hook useReducer for actions to be record.
+Your application must be using the hook `useReducer` for actions to be record.
 
 ### Installing
 React Rewind will soon be available as a Chrome extension through the Google Chrome Web Store.
 
-If you prefer to install locally, setup instructions are as follows:
+To install locally, setup instructions are as follows:
 
 1. `git clone https://github.com/reactrewind/react-rewind.git`
 2. `cd react-rewind`
@@ -36,7 +38,7 @@ If you prefer to install locally, setup instructions are as follows:
 8. `Click Record and begin interacting with your application.`
 
 
-As you interact with your application actions will populate in the events panel.  These actions are clickable and will change the state of your page. The actions can be viewed in more detail in the right panel by inspecting the actions, effects, and state.  The time slider panel allows you to rewind, fast forward,and play through all recorded actions.
+As you interact with your application, actions will populate the events panel. Click on these actions to view more details about them, such as the action object that was dispatched, the effects or the state difference, and whole state of the application after the dispatch. The time slider panel allows you to rewind, fast forward, and play through all recorded actions.
 
 ### The UI
 |Property  | Description |
