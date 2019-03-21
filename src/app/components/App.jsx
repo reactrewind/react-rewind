@@ -83,20 +83,20 @@ class App extends Component {
         // If the user paused the recording session, we return
         const { isRecording } = this.state;
         if (!isRecording) return;
-
+        console.log('got new data');
         const newData = {
           action: msg.action,
           state: msg.state,
           prevState: msg.prevState,
           id: this.state.data.length,
         };
-
+        
         // search field
         const { searchField } = this.state;
         const newDataActionType = newData.action.type.toLowerCase();
 
         const eventTime = Date.now();
-        
+
         // get the date everytime an action fires and add it to state
         if (newDataActionType.includes(searchField.toLowerCase())) {
           this.setState(state => ({
@@ -151,8 +151,12 @@ class App extends Component {
     // if we are hitting the pause or re-starting the record session
     if (isRecording || this.hasInjectedScript) return;
 
+    // We set our port to null so that when the page refreshes, we can
+    // reupdate it to the new value.
+    this.portToExtension = null;
+
     // This variable will prevent the app from refreshing when we refresh 
-    // the userpage.
+    // the userpage after starting to record.
     this.justStartedRecording = true;
     this.hasInjectedScript = true;
 
@@ -291,6 +295,7 @@ class App extends Component {
 
     this.justStartedRecording = false;
     this.hasInjectedScript = false;
+
     this.setState({
       data: [],
       searchField: '',
