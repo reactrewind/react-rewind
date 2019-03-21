@@ -43,12 +43,14 @@ To install locally, setup instructions are as follows:
 As you interact with your application, actions will populate the events panel. Click on these actions to view more details about them, such as the action object that was dispatched, the effects or state difference, and the whole state of the application after the dispatch. The time slider panel allows you to rewind, fast forward, and play through all recorded actions.
 
 ### The UI
-|Property  | Description |
+
+| Field  | Description |
 | ------------- | ------------- |
-| Events  |  Dispatched actions (three ways to view see below)  <br/>Shows elapsed time since last dispatch |
-|Actions  | Events action type and payload  |
-|Effects  | Difference between selected event and previous state  |
-|State  | Overall state of the application at the selected time  |
+| Events  | Dispatched actions (three ways to view see below)  <br/>Shows elapsed time since last dispatch |
+| Actions tab | The action object that was dispatched |
+| Effects tab | Difference between the states before and after the action was dispatched  |
+| State tab | The state object after the action was dispatched  |
+
 ## Contributing
 
 Please fork this repo.  We welcome pull requests. For suggestions or to report bugs please log an issue.
