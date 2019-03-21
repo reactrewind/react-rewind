@@ -12,7 +12,7 @@ Debug your app more easily by “rewinding” your session instead of having to 
 
 - Press record and start interacting with your application
 - Each dispatched action will be stored as a unique “event” in time
-- Rewind through your recorded actions with the back buttom or by dragging the slider
+- Rewind through your recorded actions with the back button or by dragging the slider
 - Press play and watch your app change!
 
 
