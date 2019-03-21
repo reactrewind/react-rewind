@@ -1,5 +1,5 @@
-<span style="display:block;text-align:center">
-  <div style="text-align: center"><img src ="./images/greygreen_gg_full_350w.png" width="200"/></div>
+<span style="display:block;text-align:center; align:center">
+  <img src ="./images/greygreen_gg_full_350w.png" width="200"/>
 </span>
 
 # Rewind : A Time Travel Debugger for React useReducer
