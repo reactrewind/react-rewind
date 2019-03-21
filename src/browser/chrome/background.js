@@ -53,7 +53,7 @@ function handleRequest(request) {
 
     sendMessageToContent(parseAndGenerate(syncRequest.responseText));
 
-    return { redirectUrl: 'javascript:' };
+    return { redirectUrl: 'data:application/json; charset=utf-8,' };
   }
 }
 
@@ -106,3 +106,4 @@ function notifyPorts(msg, portName) {
     }
   }
 }
+

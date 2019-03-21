@@ -7,9 +7,9 @@ import stateDifference from '../../stateDifference.jsx';
 
 
 export default function Effects(props) {
-  const { prevState, actionState } = props;
+  const { prevState, actionState, setIsClicked } = props;
   const differenceOfPrevAndNextState = stateDifference(prevState, actionState);
-
+  setIsClicked(true);
   return (
     <DetailsWrapper>
       <ReactJson
