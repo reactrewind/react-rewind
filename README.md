@@ -8,18 +8,19 @@
 ![Release Beta](https://img.shields.io/badge/release-beta-blue.svg)<br/>
 
 A time travel debugger for React's `useReducer` hook, designed to help engineers fix bugs faster by recording and replaying through different states of their applications.
-Debug your app more easily by “rewinding” your session instead of having to reproduce the issue until you find the bug.
+Debug your app more easily by “rewinding” your session instead of having to reproduce the issue until you find the problem.
 
-- Press record and start interacting with your application
-- Each dispatched action will be stored as a unique “event” in time
-- Rewind through your recorded actions with the back button or by dragging the slider
+- Press record and start interacting with your application.
+- Each dispatched action will be stored as a unique event in time.
+- Rewind through your recorded actions with the back button or by dragging the slider.
+- Analyze the state, the effects and the action object of every disptached event.
 - Press play and watch your app change!
 
 
  **React Rewind is in active development. Please follow this repo for contribution guidelines and our development road map.**
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 Your application must be using the hook `useReducer` for actions to be recorded.
