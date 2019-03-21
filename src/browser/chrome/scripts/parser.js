@@ -107,13 +107,16 @@ function commitAllHostEffectsReplacement() {
 // method names
 const USEREDUCER = 'useReducer';
 const COMMITALLHOSTEFFECTS = 'commitAllHostEffects';
+
 // library key inside of bundle
 const reactLibraryPath = './node_modules/react/cjs/react.development.js';
 const reactDOMLibraryPath = './node_modules/react-dom/cjs/react-dom.development.js';
+
 // get replacer method 
 let injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-
-let injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+let injectableCommitAllHostEffects = esprima.parseScript(
+  commitAllHostEffectsReplacement.toString(),
+);
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
@@ -136,7 +139,7 @@ function traverseBundledTree(replacementNode, functionName, ast, library) {
       if (node.key && node.key.value === library) {
         if (node.value.body.body[1].type === 'ExpressionStatement') {
           if (node.value.body.body[1].expression.callee.name === 'eval') {
-           // create new ast 
+            // create new ast 
             const reactLib = esprima.parseScript(node.value.body.body[1].expression.arguments[0].value);
              estraverse.traverse(reactLib, {
               enter(libNode) {
