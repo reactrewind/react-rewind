@@ -1,3 +1,5 @@
+![alt text](./images/greygreen_gg_full_350w.png)
+
 # React Rewind : A Time Travel Debugger for React
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br/>
 A time travel debugger for React's useReducer hook, designed to help engineers record and replay user sessions to fix bugs faster.
@@ -59,5 +61,5 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE) file for details
 
