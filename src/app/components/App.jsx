@@ -71,7 +71,11 @@ class App extends Component {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((port) => {
-      if (port.name !== 'injected-app') return;
+      // if our port is already open with the extension script,
+      // we don't want to change this.portToExtension no more. We want
+      // to keep every instance of the App associated with the specific
+      // extension script that can communicated with the injected timeTravel.
+      if (port.name !== 'injected-app' || this.portToExtension) return;
 
       this.portToExtension = port;
 
@@ -90,11 +94,10 @@ class App extends Component {
         // search field
         const { searchField } = this.state;
         const newDataActionType = newData.action.type.toLowerCase();
-        
-        // get the date everytime an action fires and add it to state
 
         const eventTime = Date.now();
-
+        
+        // get the date everytime an action fires and add it to state
         if (newDataActionType.includes(searchField.toLowerCase())) {
           this.setState(state => ({
             data: [...state.data, newData],
@@ -140,18 +143,18 @@ class App extends Component {
   }
 
   setIsRecording() {
-    // This variable will prevent the app from refreshing when we refresh 
-    // the userpage.
-    this.justStartedRecording = true;
-    const { isRecording, hasInjectedScript } = this.state;
+    const { isRecording } = this.state;
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
 
     // if we are hitting the pause or re-starting the record session
-    if (isRecording || hasInjectedScript) return;
+    if (isRecording || this.hasInjectedScript) return;
 
-    this.setState({ hasInjectedScript: true });
+    // This variable will prevent the app from refreshing when we refresh 
+    // the userpage.
+    this.justStartedRecording = true;
+    this.hasInjectedScript = true;
 
     // we query the active window so we can send it to the background script
     // so it knows on which URL to run our devtool.
@@ -167,11 +170,13 @@ class App extends Component {
   }
 
   actionInPlay() {
-    const { data, isPlayingIndex, isPlaying } = this.state;
+    const { data, isPlayingIndex } = this.state;
 
     setTimeout(() => {
       this.toTheFuture();
-      if (isPlaying && isPlayingIndex + 1 < data.length - 1) {
+      // We CANT deconstruct isPlaying because we want it to be the value
+      // when this function gets executed - 1000s later.
+      if (this.state.isPlaying && isPlayingIndex + 1 < data.length - 1) {
         this.actionInPlay();
       } else {
         this.setState({ isPlaying: false });
@@ -260,6 +265,7 @@ class App extends Component {
     if (isPlayingIndex === 0) return;
 
     if (!this.portToExtension) return console.error('No connection on stored port.');
+  
     this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'backwards',
@@ -278,11 +284,13 @@ class App extends Component {
 
   resetApp() {
     if (this.justStartedRecording) {
-      console.log('not reseting...');
-      this.justStartedRecording = false;
+      // hacky: some pages will fire update twice on the background script
+      setTimeout(() => this.justStartedRecording = false, 50);
       return;
     }
-    console.log('reseting...');
+
+    this.justStartedRecording = false;
+    this.hasInjectedScript = false;
     this.setState({
       data: [],
       searchField: '',
@@ -294,6 +302,7 @@ class App extends Component {
       action: {},
       state: {},
       prevState: {},
+      eventTimes: [],
     });
   }
 
