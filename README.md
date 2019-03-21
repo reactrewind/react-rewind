@@ -25,12 +25,12 @@ React Rewind will soon be available as a Chrome extension through the Google Chr
 
 If you prefer to install locally, setup instructions are as follows:
 
-1. `git clone https://github.com/reactrewind/react-rewind.git`<br/>
+1. `git clone https://github.com/reactrewind/react-rewind.git`
 2. `cd react-rewind`
 3. `npm install`
 4. `npm run build`
 5. `Then head to [chrome://extensions/](chrome://extensions/)`
-6. `Click Load Unpacked button and upload the chrome folder, located at react-rewind/src/browser/chrome.`<br/>
+6. `Click Load Unpacked button and upload the chrome folder, located at react-rewind/src/browser/chrome.`
 7. `On your application page open Chrome Developer tools and select React Rewind from the tool bar.`
 8. `Click Record and begin interacting with your application.`
 
