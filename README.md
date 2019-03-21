@@ -22,7 +22,7 @@ Debug your app more easily by “rewinding” your session instead of having to 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
-Your application must be using the hook `useReducer` for actions to be record.
+Your application must be using the hook `useReducer` for actions to be recorded.
 
 ### Installing
 React Rewind will soon be available as a Chrome extension through the Google Chrome Web Store.
