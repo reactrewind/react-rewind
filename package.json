@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint \"*/**/*.{js,jsx}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle_bg": "browserify src/browser/chrome/background.js -o src/browser/chrome/devtools_bundle/bg_bundle.js"
+    "bundle_bg": "browserify src/browser/chrome/background.js -o src/browser/chrome/devtools_bundle/bg_bundle.js",
+    "build": "npm run bundle_bg & npm run webpack --prefix ./src/app"
   },
   "repository": {
     "type": "git",

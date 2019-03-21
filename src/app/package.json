@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon server/server.js",
     "start:dev": "webpack-dev-server --mode development --open --hot",
-    "build": "webpack --watch"
+    "build": "webpack --watch",
+    "webpack": "webpack"
   },
   "babel": {
     "presets": [
