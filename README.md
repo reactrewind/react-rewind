@@ -5,7 +5,8 @@
 # Rewind: A Time Travel Debugger for React *useReducer*
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Release Beta](https://img.shields.io/badge/release-beta-blue.svg)<br/>
+![Release Beta](https://img.shields.io/badge/release-beta-blue.svg)<br/><br/>
+![](images/BrowserPreview_tmp.gif)<br/>
 
 A time travel debugger for React's `useReducer` hook, designed to help engineers fix bugs faster by recording and replaying through different states of their applications.
 Debug your app more easily by “rewinding” your session instead of having to reproduce the issue until you find the problem.
@@ -43,6 +44,7 @@ To install locally, setup instructions are as follows:
 As you interact with your application, actions will populate the events panel. Click on these actions to view more details about them, such as the action object that was dispatched, the effects or state difference, and the whole state of the application after the dispatch. The time slider panel allows you to rewind, fast forward, and play through all recorded actions.
 
 ### The UI
+![](images/effects_900w.gif)
 
 | Field  | Description |
 | ------------- | ------------- |
