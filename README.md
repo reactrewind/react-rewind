@@ -1,7 +1,6 @@
-
-<p align="center">
+<span style="display:block;text-align:center">
   <div style="text-align: center"><img src ="./images/greygreen_gg_full_350w.png" width="200"/></div>
-</p>
+</span>
 
 # Rewind : A Time Travel Debugger for React useReducer
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br/>
