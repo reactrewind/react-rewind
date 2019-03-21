@@ -1,16 +1,23 @@
 # React Rewind : A Time Travel Debugger for React
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br/>
-A time travel debugger tool made to work with react 16.8+.
-- useReducer 
-- useState
-React Rewind is in active development. Please follow this repo for contribution guidelines and our development road map.
+A time travel debugger tool made to work with React 16.8+, designed to help engineers record and replay user sessions to fix bugs faster.
+Debug issues easier by “rewinding” your session instead of having to reproduce the issue until you find the bug
+
+- Press record and start interacting with your application
+- Each action will be stored as a unique “event” in time
+- Pause your recording and start observing all program activities
+- Press play to “rewind” through your recorded actions
+- View a real-time playback representation of your application state at any given time
+
+
+ **React Rewind is in active development. Please follow this repo for contribution guidelines and our development road map.**
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
-Your application must be using the hooks useReducer or useState for actions to be record.
+Your application must be using the hooks useReducer for actions to be record.
 
 ### Installing
 React Rewind is available as a Chrome extension through the Google Chrome Web Store.
