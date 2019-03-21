@@ -62,5 +62,5 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENCE.md](./LICENCE) file for details
 
