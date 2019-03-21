@@ -19,7 +19,7 @@
   <img src ="images/BrowserPreview_tmp.gif" width="500">
 </p>
 
- **React Rewind is in active development. Please follow this repo for contribution guidelines and our development road map.**
+ **React Rewind is in active development. Follow this repo for contribution guidelines.**
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
