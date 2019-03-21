@@ -1,25 +1,27 @@
 {
   "name": "react-rewind",
   "version": "1.0.0",
-  "description": "\"Time Travel Debugger for React Hooks\"",
+  "description": "Time-travel debugger for React useReducer",
   "main": "index.js",
   "scripts": {
     "lint": "eslint \"*/**/*.{js,jsx}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle_bg": "browserify src/browser/chrome/background.js -o src/browser/chrome/devtools_bundle/bg_bundle.js"
+    "bundle_bg": "browserify src/browser/chrome/background.js -o src/browser/chrome/devtools_bundle/bg_bundle.js",
+    "build": "npm run bundle_bg & npm run webpack --prefix ./src/app",
+    "install_dep": "npm install & npm install --prefix ./src/app"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/reactrewind"
   },
-  "author": "react-rewind",
-  "license": "ISC",
+  "author": "React Rewind",
+  "license": "MIT",
   "devDependencies": {
     "babel-eslint": "^10.0.1",
+    "browserify": "^16.2.3",
     "eslint": "^5.14.1",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-react": "^7.12.4",
-    "watchify": "^3.11.1"
+    "eslint-plugin-react": "^7.12.4"
   },
   "dependencies": {
     "escodegen": "^1.11.1",
