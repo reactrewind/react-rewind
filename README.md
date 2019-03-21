@@ -1,6 +1,6 @@
-<span style="display:block;text-align:center; align:center">
-  <img src ="./images/greygreen_gg_full_350w.png" width="200"/>
-</span>
+<p align="center">
+  <img src="./images/greygreen_gg_full_350w.png">
+</p>
 
 # Rewind: A Time Travel Debugger for React *useReducer*
 
