@@ -6,7 +6,7 @@
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Release Beta](https://img.shields.io/badge/release-beta-blue.svg)<br/><br/>
- Designed to help engineers fix bugs faster by recording and replaying through different states of their applications. Debug your app more easily by “rewinding” your session instead of having to reproduce the issue until you find the problem. <br/>
+ Designed to help engineers fix bugs faster by recording and replaying through different states of their applications. Debug your app more easily by “rewinding” your session instead of having to wait to reproduce the issue once you find the problem. <br/>
 
 
 
@@ -62,7 +62,7 @@ Please fork this repo.  We welcome pull requests. For suggestions or to report b
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/reactrewind/react-rewind/tags). 
 
 ## Authors
 
