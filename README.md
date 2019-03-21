@@ -6,13 +6,13 @@
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br/>
 
-A time travel debugger for React's `useReducer` hook, designed to help engineers fix bugs faster record and replay different states of their applications to fix bugs faster.
+A time travel debugger for React's `useReducer` hook, designed to help engineers fix bugs faster by recording and replaying through different states of their applications.
 Debug your app more easily by “rewinding” your session instead of having to reproduce the issue until you find the bug.
 
 - Press record and start interacting with your application
 - Each dispatched action will be stored as a unique “event” in time
 - Rewind through your recorded actions with the back buttom or by dragging the slider
-- Press play to view your changing app state 
+- Press play and watch your app change!
 
 
  **React Rewind is in active development. Please follow this repo for contribution guidelines and our development road map.**
@@ -38,7 +38,7 @@ To install locally, setup instructions are as follows:
 8. `Click Record and begin interacting with your application.`
 
 
-As you interact with your application, actions will populate the events panel. Click on these actions to view more details about them, such as the action object that was dispatched, the effects or the state difference, and whole state of the application after the dispatch. The time slider panel allows you to rewind, fast forward, and play through all recorded actions.
+As you interact with your application, actions will populate the events panel. Click on these actions to view more details about them, such as the action object that was dispatched, the effects or state difference, and the whole state of the application after the dispatch. The time slider panel allows you to rewind, fast forward, and play through all recorded actions.
 
 ### The UI
 |Property  | Description |
