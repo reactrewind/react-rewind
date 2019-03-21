@@ -18,7 +18,7 @@ export default function Details(props) {
   // destructuring required info that's being passed down from App.jsx
   // passing these props onto children
   const {
-    action, id, actionState,
+    action, prevState, actionState,
   } = props;
 
   
@@ -34,7 +34,7 @@ export default function Details(props) {
         />
         <Route
           path='/effects'
-          render={props => <EffectsDisplay {...props} action={action} />}
+          render={props => <EffectsDisplay {...props} prevState={prevState} actionState={actionState} />}
         />
         <Route
           path='/state'

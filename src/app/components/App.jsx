@@ -45,10 +45,16 @@ class App extends Component {
       isPlaying: false,
       isRecording: false,
       isPlayingIndex: 0,
+      id: 0,
+      action: {},
+      state: {},
+      prevState: {},
+      eventTimes: [],
     };
 
     this.portToExtension = null;
     this.justStartedRecording = false;
+    this.hasInjectedScript = false;
 
     this.addActionToView = this.addActionToView.bind(this);
     this.toTheFuture = this.toTheFuture.bind(this);
@@ -65,25 +71,39 @@ class App extends Component {
     // adds listener to the effects that are gonna be sent from
     // our edited useReducer from the 'react' library.
     chrome.runtime.onConnect.addListener((port) => {
-      if (port.name !== 'injected-app') return;
+      // if our port is already open with the extension script,
+      // we don't want to change this.portToExtension no more. We want
+      // to keep every instance of the App associated with the specific
+      // extension script that can communicated with the injected timeTravel.
+      if (port.name !== 'injected-app' || this.portToExtension) return;
 
       this.portToExtension = port;
 
       port.onMessage.addListener((msg) => {
+        // If the user paused the recording session, we return
+        const { isRecording } = this.state;
+        if (!isRecording) return;
+
         const newData = {
           action: msg.action,
           state: msg.state,
+          prevState: msg.prevState,
           id: this.state.data.length,
         };
 
+        // search field
         const { searchField } = this.state;
         const newDataActionType = newData.action.type.toLowerCase();
 
+        const eventTime = Date.now();
+        
+        // get the date everytime an action fires and add it to state
         if (newDataActionType.includes(searchField.toLowerCase())) {
           this.setState(state => ({
             data: [...state.data, newData],
             isPlayingIndex: state.data.length,
             filteredData: [...state.filteredData, newData],
+            eventTimes: [...state.eventTimes, eventTime],
           }));
         } else {
           this.setState(state => ({
@@ -108,7 +128,8 @@ class App extends Component {
 
   // functionality to change 'play' button to 'stop'
   setIsPlaying() {
-    if (this.state.isPlayingIndex >= this.state.data.length - 1) {
+    const { isPlayingIndex, data } = this.state;
+    if (isPlayingIndex >= data.length - 1) {
       return;
     }
 
@@ -122,20 +143,25 @@ class App extends Component {
   }
 
   setIsRecording() {
-    // This variable will prevent the app from refreshing when we refresh 
-    // the userpage. 
-    this.justStartedRecording = true;
-
+    const { isRecording } = this.state;
     this.setState(state => ({
       isRecording: !state.isRecording,
     }));
+
+    // if we are hitting the pause or re-starting the record session
+    if (isRecording || this.hasInjectedScript) return;
+
+    // This variable will prevent the app from refreshing when we refresh 
+    // the userpage.
+    this.justStartedRecording = true;
+    this.hasInjectedScript = true;
 
     // we query the active window so we can send it to the background script
     // so it knows on which URL to run our devtool.
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const { url } = tabs[0];
 
-      // backgroundPort is a variable made avaiable by the devtools.js 
+      // backgroundPort is a variable made avaiable by the devtools.js
       backgroundPort.postMessage({
         turnOnDevtool: true,
         url,
@@ -148,6 +174,8 @@ class App extends Component {
 
     setTimeout(() => {
       this.toTheFuture();
+      // We CANT deconstruct isPlaying because we want it to be the value
+      // when this function gets executed - 1000s later.
       if (this.state.isPlaying && isPlayingIndex + 1 < data.length - 1) {
         this.actionInPlay();
       } else {
@@ -162,10 +190,10 @@ class App extends Component {
     const { data } = this.state;
     const actionToView = data.filter(action => e.target.id === String(action.id));
     const {
-      action, id, state,
+      action, id, state, prevState,
     } = actionToView[0];
     this.setState({
-      action, id, state,
+      action, id, state, prevState,
     });
   }
 
@@ -190,7 +218,7 @@ class App extends Component {
   // time travel bar change
   handleBarChange(e) {
     const { data, isPlayingIndex } = this.state;
-    const { id, action, state } = data[e.target.value];
+    const { id, action, state, prevState } = data[e.target.value];
     // forward or past
     const currentIsPlayingIndex = e.target.value;
     const forward = currentIsPlayingIndex > isPlayingIndex;
@@ -198,6 +226,7 @@ class App extends Component {
       id,
       action,
       state,
+      prevState,
       isPlayingIndex: parseInt(currentIsPlayingIndex),
     });
     // Displays to screen
@@ -219,18 +248,15 @@ class App extends Component {
       direction: 'forward',
     });
 
-    // if (isPlayingIndex >= this.state.data.length - 1) isPlayingIndex = 0;
-
-    const { id, action, state } = data[isPlayingIndex + 1];
+    const { id, action, state, prevState } = data[isPlayingIndex + 1];
     this.setState(prev => ({
       ...prev,
       id,
       action,
       state,
+      prevState,
       isPlayingIndex: isPlayingIndex + 1,
     }));
-
-    console.log('isPlayingIndex', this.state.isPlayingIndex);
   }
 
   // function to travel to the PAST
@@ -239,28 +265,32 @@ class App extends Component {
     if (isPlayingIndex === 0) return;
 
     if (!this.portToExtension) return console.error('No connection on stored port.');
+  
     this.portToExtension.postMessage({
       type: 'TIMETRAVEL',
       direction: 'backwards',
     });
 
-    const { id, action, state } = data[isPlayingIndex - 1];
+    const { id, action, state, prevState } = data[isPlayingIndex - 1];
     this.setState(prev => ({
       ...prev,
       id,
       action,
       state,
+      prevState,
       isPlayingIndex: isPlayingIndex - 1,
     }));
   }
 
   resetApp() {
     if (this.justStartedRecording) {
-      console.log('not reseting...');
-      this.justStartedRecording = false;
+      // hacky: some pages will fire update twice on the background script
+      setTimeout(() => this.justStartedRecording = false, 50);
       return;
     }
-    console.log('reseting...');
+
+    this.justStartedRecording = false;
+    this.hasInjectedScript = false;
     this.setState({
       data: [],
       searchField: '',
@@ -268,6 +298,11 @@ class App extends Component {
       isPlaying: false,
       isRecording: false,
       isPlayingIndex: 0,
+      id: 0,
+      action: {},
+      state: {},
+      prevState: {},
+      eventTimes: [],
     });
   }
 
@@ -277,12 +312,13 @@ class App extends Component {
       id,
       state,
       data,
-      setIsPlaying,
       isPlaying,
-      setIsRecording,
       isRecording,
       filteredData,
       searchField,
+      isPlayingIndex,
+      prevState,
+      eventTimes,
     } = this.state;
 
     return (
@@ -299,6 +335,7 @@ class App extends Component {
                   searchChange={this.searchChange}
                   filteredData={filteredData}
                   searchField={searchField}
+                  eventTimes={eventTimes}
                 />
               )}
             right={
@@ -307,6 +344,7 @@ class App extends Component {
                   action={action}
                   id={id}
                   actionState={state}
+                  prevState={prevState}
                 />
               )}
           />
@@ -315,7 +353,7 @@ class App extends Component {
             toTheFuture={this.toTheFuture}
             toThePast={this.toThePast}
             isPlaying={isPlaying}
-            isPlayingIndex={this.state.isPlayingIndex}
+            isPlayingIndex={isPlayingIndex}
             isRecording={isRecording}
             setIsPlaying={this.setIsPlaying}
             setIsRecording={this.setIsRecording}
