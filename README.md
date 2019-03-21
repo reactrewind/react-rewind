@@ -32,12 +32,12 @@ To install locally, setup instructions are as follows:
 
 1. `git clone https://github.com/reactrewind/react-rewind.git`
 2. `cd react-rewind`
-3. `npm install`
+3. `npm run install_dep`
 4. `npm run build`
-5. `Then head to [chrome://extensions/](chrome://extensions/)`
-6. `Click Load Unpacked button and upload the chrome folder, located at react-rewind/src/browser/chrome.`
-7. `On your application page open Chrome Developer tools and select React Rewind from the tool bar.`
-8. `Click Record and begin interacting with your application.`
+5. Visit the URL `chrome://extensions/`
+6. Click Load Unpacked button and select the folder `react-rewind/src/browser/chrome`
+7. On your application page, open the Chrome Developer tools and select `React Rewind` from the tool bar
+8. Click Record and begin interacting with your application
 
 
 As you interact with your application, actions will populate the events panel. Click on these actions to view more details about them, such as the action object that was dispatched, the effects or state difference, and the whole state of the application after the dispatch. The time slider panel allows you to rewind, fast forward, and play through all recorded actions.
