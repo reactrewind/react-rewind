@@ -7,7 +7,7 @@ const interceptedURLs = {};
 
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
-
+  console.log('refresh completed on: ', tab.url);
   // active page action button and inject extension.js
   chrome.pageAction.show(tab.id);
   chrome.tabs.executeScript(null, {
@@ -24,7 +24,6 @@ chrome.tabs.onUpdated.addListener((id, info, tab) => {
     { action: 'refresh_devtool', tabId: tab.id },
     'devtools',
   );
-
 });
 
 function handleRequest(request) {

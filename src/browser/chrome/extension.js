@@ -6,7 +6,6 @@
   port.onMessage.addListener((msg) => {
     // This is where we get messages from the App component.
     // We get an object { type: 'TIMETRAVEL', direction: 'forward' }
-    console.log('Got msg to timetravel: ', msg);
     window.postMessage(msg);
   });
 
