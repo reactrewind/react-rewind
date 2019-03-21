@@ -4,6 +4,9 @@
   "description": "Time travel",
   "manifest_version": 2,
   "page_action": {
+    "default_icon": {        
+      "32": "icon.png"   
+    },
     "default_popup": "page_action.html"
   },
   "background": {
@@ -24,7 +27,7 @@
     "webRequestBlocking"
   ],
   "web_accessible_resources": [
-    "scripts/deepclone_bundle.js"
+    "scripts/deepclone_bundle.js" 
   ],
   "devtools_page": "devtools.html"
 }
