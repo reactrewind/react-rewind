@@ -4,8 +4,8 @@
 
 # Rewind: A Time Travel Debugger for React *useReducer*
 <p align="center">
-  ![Fibonacci RMI Java EE](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)(www.google.com "RMI Fibonacci Java")
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg"> <img src="https://img.shields.io/badge/release-beta-blue.svg">
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Release Beta](https://img.shields.io/badge/release-beta-blue.svg)
 </p>
 
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
