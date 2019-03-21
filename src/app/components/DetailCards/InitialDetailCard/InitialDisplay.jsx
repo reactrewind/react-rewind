@@ -4,9 +4,9 @@ import ReactJson from 'react-json-view';
 //styled components
 import { DetailsWrapper } from '../../../styles/Details.jsx';
 
-export default function Actions({ action, setIsClicked }) {
+export default function InitialDisplay({ action }) {
   // renders action information
-  setIsClicked(true);
+  
   return (
     <DetailsWrapper>
       {<ReactJson

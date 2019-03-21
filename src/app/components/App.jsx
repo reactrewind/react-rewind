@@ -104,11 +104,13 @@ class App extends Component {
             isPlayingIndex: state.data.length,
             filteredData: [...state.filteredData, newData],
             eventTimes: [...state.eventTimes, eventTime],
+            ...newData,
           }));
         } else {
           this.setState(state => ({
             data: [...state.data, newData],
             isPlayingIndex: state.data.length,
+            ...newData,
           }));
         }
       });
