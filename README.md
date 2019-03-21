@@ -16,7 +16,7 @@
 - Analyze the state, the effects and the action object of every disptached event.
 - Press play and watch your app change!
 <p align="center">
-  <img src ="images/BrowserPreview_tmp.gif" width="500">
+  <img src ="images/BrowserPreview_tmp.gif" width="600">
 </p>
 
  **React Rewind is in active development. Follow this repo for contribution guidelines.**
@@ -46,7 +46,7 @@ As you interact with your application, actions will populate the events panel. C
 
 ### Application Features
 <p align="center">
-  <img src ="images/effects_900w.gif" width="500" />
+  <img src ="images/effects_900w.gif" width="700" />
 </p>
 
 | Field  | Description |
