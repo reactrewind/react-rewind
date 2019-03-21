@@ -1,0 +1,38 @@
+{
+  "name": "React Rewind",
+  "version": "1.0",
+  "description": "Time travel",
+  "manifest_version": 2,
+  "page_action": {
+    "default_icon": {        
+      "32": "icons/pa_icon.png"   
+    },
+    "default_popup": "page_action.html"
+  },
+  "icons": { 
+    "16": "icons/icon_16.png",
+    "48": "icons/icon_48.png",
+   "128": "icons/icon_128.png" 
+  },
+  "background": {
+    "scripts": ["devtools_bundle/bg_bundle.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["scripts/inject_script_tags.js"],
+      "run_at":"document_start"
+    }
+  ],
+  "permissions": [
+    "<all_urls>",
+    "tabs",
+    "storage",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "web_accessible_resources": [
+    "scripts/deepclone_bundle.js" 
+  ],
+  "devtools_page": "devtools.html"
+}
