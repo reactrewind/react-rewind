@@ -21,22 +21,18 @@ These instructions will get you a copy of the project up and running on your loc
 Your application must be using the hook useReducer for actions to be record.
 
 ### Installing
-React Rewind is available as a Chrome extension through the Google Chrome Web Store.
-On your application page open Chrome Developer tools and select React Rewind from the tool bar. 
-Click `Record` and begin interacting with your application.
+React Rewind will soon be available as a Chrome extension through the Google Chrome Web Store.
 
 If you prefer to install locally, setup instructions are as follows:
-```
-git clone https://github.com/reactrewind/react-rewind.git
-cd reactrewind
-npm install
-npm run rewind
-```
 
-Then head to [chrome://extensions/](chrome://extensions/)<br/>
-Click `Load Unpacked` button and upload the chrome folder, located at react-rewind/src/browser/chrome.<br/>
-On your application page open Chrome Developer tools and select React Rewind from the tool bar. <br/>
-Click `Record` and begin interacting with your application.
+1. `git clone https://github.com/reactrewind/react-rewind.git`<br/>
+2. `cd react-rewind`
+3. `npm install`
+4. `npm run build`
+5. `Then head to [chrome://extensions/](chrome://extensions/)`
+6. `Click Load Unpacked button and upload the chrome folder, located at react-rewind/src/browser/chrome.`<br/>
+7. `On your application page open Chrome Developer tools and select React Rewind from the tool bar.`
+8. `Click Record and begin interacting with your application.`
 
 
 As you interact with your application actions will populate in the events panel.  These actions are clickable and will change the state of your page. The actions can be viewed in more detail in the right panel by inspecting the actions, effects, and state.  The time slider panel allows you to rewind, fast forward,and play through all recorded actions.
