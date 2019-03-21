@@ -16,6 +16,7 @@ export default function FilterBar(props) {
           type="text"
           placeholder="filter actions by name..."
           onChange={searchChange}
+          value={props.searchField}
         />
       </FilterWrapper>
     </>

@@ -1,24 +1,24 @@
 const esprima = require('esprima');
 const estraverse = require('estraverse');
 const escodegen = require('escodegen');
-const _ = require('lodash');
 
 // declare functions to insert
 function useReducerReplacement() {
   const dispatcher = resolveDispatcher();
   function reducerWithTracker(state, action) {
     const newState = reducer(state, action);
-    timeTravelTracker[timeTravelTracker.length - 1].actionDispatched = true;
+    timeTravelLList.tail.value.actionDispatched = true;
     window.postMessage({
       type: 'DISPATCH',
       data: {
         state: newState,
+        prevState: state,
         action,
       },
     });
     return newState;
   }
-  return dispatcher.useReducer(reducerWithTracker, initialArg, init);
+  return dispatcher.useReducer(reducerWithTracker, arguments[1], arguments[2]);
 }
 
 function commitAllHostEffectsReplacement() {
@@ -35,26 +35,27 @@ function commitAllHostEffectsReplacement() {
     }
     recordEffect();
 
-    let {effectTag} = nextEffect;
+    const { effectTag } = nextEffect;
 
     if (effectTag & ContentReset) {
       commitResetTextContent(nextEffect);
     }
 
     if (effectTag & Ref) {
-      let current$$1 = nextEffect.alternate;
+      const current$$1 = nextEffect.alternate;
       if (current$$1 !== null) {
         commitDetachRef(current$$1);
       }
     }
 
-    let primaryEffectTag = effectTag & (Placement | Update | Deletion);
+    const primaryEffectTag = effectTag & (Placement | Update | Deletion);
     switch (primaryEffectTag) {
       case Placement:
       {
-        timeTravelTracker.push({
-            primaryEffectTag: 'PLACEMENT',
-            effect: _.cloneDeep(nextEffect),
+        // editbyme
+        timeTravelLList.append({
+          primaryEffectTag: 'PLACEMENT',
+          effect: _.cloneDeep(nextEffect),
         });
 
         commitPlacement(nextEffect);
@@ -66,25 +67,27 @@ function commitAllHostEffectsReplacement() {
       {
         commitPlacement(nextEffect);
         nextEffect.effectTag &= ~Placement;
-        let _current = nextEffect.alternate;
+        const _current = nextEffect.alternate;
         commitWork(_current, nextEffect);
         break;
       }
       case Update:
       {
-        timeTravelTracker.push({
+        // editbyme
+        timeTravelLList.append({
           primaryEffectTag: 'UPDATE',
           effect: _.cloneDeep(nextEffect),
           current: _.cloneDeep(nextEffect.alternate),
         });
 
-        let _current2 = nextEffect.alternate;
+        const _current2 = nextEffect.alternate;
         commitWork(_current2, nextEffect);
         break;
       }
       case Deletion:
       {
-        timeTravelTracker.push({
+        // editbyme
+        timeTravelLList.append({
           primaryEffectTag: 'DELETION',
           effect: _.cloneDeep(nextEffect),
         });
@@ -100,20 +103,24 @@ function commitAllHostEffectsReplacement() {
     resetCurrentFiber();
   }
 }
-// regex method signatures
-const uRsig = new RegExp(/\b(useReducer)\b\(reducer, initialArg, init\)/);
-const cAHEsig = new RegExp(/\b(function)\b\s\b(commitAllHostEffects)\b\(\)/, 'g');
 
-// get replacer method bodies
+// method names
+const USEREDUCER = 'useReducer';
+const COMMITALLHOSTEFFECTS = 'commitAllHostEffects';
+
+// library key inside of bundle
+const reactLibraryPath = './node_modules/react/cjs/react.development.js';
+const reactDOMLibraryPath = './node_modules/react-dom/cjs/react-dom.development.js';
+
+// get replacer method 
 let injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-let injectableUseReducerString = escodegen.generate(injectableUseReducer.body[0].body);
-
-let injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-let injectableCommitAllHostEffectsString = escodegen.generate(injectableCommitAllHostEffects.body[0].body);
+let injectableCommitAllHostEffects = esprima.parseScript(
+  commitAllHostEffectsReplacement.toString(),
+);
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
-  console.log('traverse called');
+  console.log('unbundled traverse called');
   estraverse.replace(ast, {
     enter(node) {
       if (node.type === 'FunctionDeclaration') {
@@ -125,55 +132,55 @@ function traverseTree(replacementNode, functionName, ast) {
     },
   });
 }
-function stringParser(string, newBody, methodSig) {
-  let stack = [];
-  const foundMethod = methodSig.test(string);
-  let oldBody = '';
-  let output;
-  for (let i = methodSig.lastIndex; i < string.length; i++) {
-    if (foundMethod) {
-      if (string[i] === '{') {
-        stack.push(string[i]);
+
+function traverseBundledTree(replacementNode, functionName, ast, library) {
+  estraverse.traverse(ast, {
+    enter(node) {
+      if (node.key && node.key.value === library) {
+        if (node.value.body.body[1].type === 'ExpressionStatement') {
+          if (node.value.body.body[1].expression.callee.name === 'eval') {
+            // create new ast 
+            const reactLib = esprima.parseScript(node.value.body.body[1].expression.arguments[0].value);
+             estraverse.traverse(reactLib, {
+              enter(libNode) {
+                if (libNode.type === 'FunctionDeclaration') {
+                  if (libNode.id.name === functionName) {
+                    libNode.body = replacementNode.body[0].body;
+                    console.log('From parser. REPLACING body!', libNode.id.name);
+                  }
+                }
+              },
+            });
+            node.value.body.body[1].expression.arguments[0].value = escodegen.generate(reactLib);
+            node.value.body.body[1].expression.arguments[0].raw = JSON.stringify(escodegen.generate(reactLib));
+            console.log('arguments replaced');
+          }
+        }
       }
-      if (stack.length > 0 && stack[stack.length - 1] === '{' && string[i] === '}') {
-        stack.pop();
-        oldBody += string[i];
-        output = string.replace(oldBody, newBody);
-        break;
-      }
-      if (stack.length > 0) {
-        oldBody += string[i];
-      }
-    }
-  }
-  return output;
+    },
+  });
 }
+
 const parseAndGenerate = (codeString) => {
   if (codeString.search('react') !== -1) {
-    let ast;
-    try {
-      ast = esprima.parseModule(codeString);
-    } catch (error) {
-      // esprima throws parsing error webpack devtool setting generates code
-      console.log('unable to use esprima parser');
-      codeString = stringParser(codeString, injectableUseReducerString, uRsig);
-      codeString = stringParser(codeString, injectableCommitAllHostEffectsString, cAHEsig);
-      return codeString;
-    }
-    // parse react-dom code
-    injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
-    traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
+    const ast = esprima.parseModule(codeString);
+    // Webpack bundle is wrapped in function call
+    if (ast.body[0].expression.type === 'CallExpression') {
+      traverseBundledTree(injectableUseReducer, USEREDUCER, ast, reactLibraryPath);
+      traverseBundledTree(injectableCommitAllHostEffects, COMMITALLHOSTEFFECTS, ast, reactDOMLibraryPath);
+    } else {
+      // parse react-dom code
+      injectableCommitAllHostEffects = esprima.parseScript(commitAllHostEffectsReplacement.toString());
+      traverseTree(injectableCommitAllHostEffects, 'commitAllHostEffects', ast);
 
-    // parse react code
-    injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
-    traverseTree(injectableUseReducer, 'useReducer', ast);
-    
+      // parse react code
+      injectableUseReducer = esprima.parseScript(useReducerReplacement.toString());
+      traverseTree(injectableUseReducer, 'useReducer', ast);
+    }
     const code = escodegen.generate(ast);
     console.log('returning code.');
     return code;
   }
-  console.log('returning string.');
   return codeString;
 };
-
 module.exports = parseAndGenerate;

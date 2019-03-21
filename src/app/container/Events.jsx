@@ -18,16 +18,19 @@ class Events extends Component {
       data,
       searchChange,
       filteredData,
+      searchField,
+      eventTimes,
     } = this.props;
     return (
       <>
         <EventsNav />
-        <FilterBar searchChange={searchChange} />
+        <FilterBar searchChange={searchChange} searchField={searchField} />
         <EventsDisplay
           data={data}
           filteredData={filteredData}
           addAction={addAction}
           activeEventId={activeEventId}
+          eventTimes={eventTimes}
         />
       </>
     );
