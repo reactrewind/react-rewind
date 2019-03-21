@@ -1,6 +1,7 @@
-![alt text](./images/greygreen_gg_full_350w.png)
 
-# React Rewind : A Time Travel Debugger for React
+<div style="text-align:center"><img src ="./images/greygreen_gg_full_350w.png" width="200"/></div>
+
+# Rewind : A Time Travel Debugger for React useReducer
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)<br/>
 A time travel debugger for React's useReducer hook, designed to help engineers record and replay user sessions to fix bugs faster.
 Debug issues easier by “rewinding” your session instead of having to reproduce the issue until you find the bug.
