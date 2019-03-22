@@ -1,7 +1,8 @@
 {
   "name": "React Rewind",
-  "version": "1.0",
-  "description": "Time travel",
+  "short_name": "React Rewind",
+  "version": "0.0.0.1",
+  "description": "Time travel debugger for useReducer hook",
   "manifest_version": 2,
   "page_action": {
     "default_icon": {        
