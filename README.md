@@ -35,7 +35,7 @@ To install locally, setup instructions are as follows:
 1. `git clone --single-branch --branch beta-release https://github.com/reactrewind/react-rewind.git`
 2. Visit the URL `chrome://extensions/`
 3. Click Load Unpacked button and select the folder `react-rewind/chrome`
-4. On your application page, open the Chrome Developer (Ctrl + Shift + J / Mac: F12) tools and select `React Rewind` from the tool bar
+4. On your application page, open the Chrome Developer (Ctrl + Shift + J / Mac: Cmd + Option + I) tools and select `React Rewind` from the tool bar
 5. Click Record and begin interacting with your application
 
 
