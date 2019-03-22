@@ -6,7 +6,8 @@ import { FilterWrapper } from '../../styles/FilterBar.jsx';
 
 export default function FilterBar(props) {
   const {
-    searchChange
+    searchChange,
+    searchField,
   } = props;
 
   return (
@@ -16,7 +17,7 @@ export default function FilterBar(props) {
           type="text"
           placeholder="filter actions by name..."
           onChange={searchChange}
-          value={props.searchField}
+          value={searchField}
         />
       </FilterWrapper>
     </>

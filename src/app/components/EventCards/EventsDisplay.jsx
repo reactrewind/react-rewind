@@ -7,12 +7,12 @@ import EventCreator from './EventCreator.jsx';
 import { EventsWrapper } from '../../styles/Events.jsx';
 
 export default function Events(props) {
-  const { 
-    data,
+  const {
     activeEventId,
     filteredData,
     eventTimes,
   } = props;
+
   return (
     <EventsWrapper>
       {filteredData.map((e, i) => (
