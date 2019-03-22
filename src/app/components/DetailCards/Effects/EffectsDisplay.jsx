@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactJson from 'react-json-view';
 import { DetailsWrapper } from '../../../styles/Details.jsx';
-// functionality
+
 // gets difference from previous state to new state
 import stateDifference from '../../stateDifference.jsx';
 

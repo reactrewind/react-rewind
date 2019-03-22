@@ -83,7 +83,7 @@ class App extends Component {
         // If the user paused the recording session, we return
         const { isRecording } = this.state;
         if (!isRecording) return;
-        console.log('got new data');
+
         const newData = {
           action: msg.action,
           state: msg.state,

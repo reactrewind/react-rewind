@@ -1,4 +1,4 @@
-import React, { useContext, useState, Component} from 'react';
+import React, { Component } from 'react';
 
 // components
 import EventsNav from '../components/EventCards/EventsNav.jsx';

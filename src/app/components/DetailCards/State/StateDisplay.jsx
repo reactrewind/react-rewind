@@ -9,7 +9,7 @@ export default function State({ actionState, setIsClicked }) {
   setIsClicked(true);
   return (
     <DetailsWrapper>
-        {<StateCard actionState={actionState} />}
+      {<StateCard actionState={actionState} />}
     </DetailsWrapper>
   );
 }
