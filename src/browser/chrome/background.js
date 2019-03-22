@@ -106,4 +106,3 @@ function notifyPorts(msg, portName) {
     }
   }
 }
-
