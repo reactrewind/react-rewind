@@ -8,7 +8,7 @@ export default function EffectCard(props) {
   return (
     <div>
       <ReactJson
-        theme={'threezerotwofour'}
+        theme="threezerotwofour"
         style={{ backgroundColor: 'transparent', height: '-webkit-fill-available' }}
         displayDataTypes={false}
         src={actionState}

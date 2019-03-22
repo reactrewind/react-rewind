@@ -1,16 +1,21 @@
 {
   "name": "React Rewind",
-  "version": "1.0",
-  "description": "Time travel",
+  "short_name": "React Rewind",
+  "version": "0.0.0.1",
+  "description": "Time travel debugger for useReducer hook",
   "manifest_version": 2,
   "page_action": {
     "default_icon": {        
-      "32": "icons/pa_icon.png"   
+      "16": "icons/icon_16.png",
+      "32": "icons/icon_32.png",   
+      "48": "icons/icon_48.png",
+      "128": "icons/icon_128.png"
     },
     "default_popup": "page_action.html"
   },
   "icons": { 
     "16": "icons/icon_16.png",
+    "32": "icons/icon_32.png",   
     "48": "icons/icon_48.png",
    "128": "icons/icon_128.png" 
   },

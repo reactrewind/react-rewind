@@ -4,12 +4,12 @@ import StateCard from './StateCard.jsx';
 // styled component
 import { DetailsWrapper } from '../../../styles/Details.jsx';
 
-export default function State(props) {
+export default function State({ actionState, setIsClicked }) {
   // stringifying data to pass down to StateCard to display
-  const { actionState } = props;
+  setIsClicked(true);
   return (
     <DetailsWrapper>
-        {<StateCard actionState={actionState} />}
+      {<StateCard actionState={actionState} />}
     </DetailsWrapper>
   );
 }
