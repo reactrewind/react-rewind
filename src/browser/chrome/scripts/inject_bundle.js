@@ -45,7 +45,7 @@ class DoublyLinkedList {
 const funcStorage = {};
 let root = null;
 const timeTravelLList = new DoublyLinkedList();
-
+console.log('ok!!!');
 function timeTravel(direction) {
   if (!root) {
     root = getRootContainerInstance(timeTravelLList.current.value.effect);
@@ -63,13 +63,13 @@ function timeTravel(direction) {
     timeTravelLList.current = timeTravelLList.current.next;
   }
 
+  console.log('AAAAAA ->', funcStorage);
   const {
     commitDeletion,
     commitPlacement,
     commitWork,
     prepareUpdate,
   } = funcStorage;
-
   while (true) {
     // console.log('doing work for ', timeTravelTrackerIndex);
     const { primaryEffectTag, effect } = timeTravelLList.current.value;
