@@ -83,7 +83,7 @@ class App extends Component {
         // If the user paused the recording session, we return
         const { isRecording } = this.state;
         if (!isRecording) return;
-        console.log('got new data');
+
         const newData = {
           action: msg.action,
           state: msg.state,
@@ -104,11 +104,13 @@ class App extends Component {
             isPlayingIndex: state.data.length,
             filteredData: [...state.filteredData, newData],
             eventTimes: [...state.eventTimes, eventTime],
+            ...newData,
           }));
         } else {
           this.setState(state => ({
             data: [...state.data, newData],
             isPlayingIndex: state.data.length,
+            ...newData,
           }));
         }
       });

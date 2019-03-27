@@ -6,7 +6,7 @@
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/reactrewind/react-rewind/pulls) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Release Beta](https://img.shields.io/badge/release-beta-blue.svg)<br/><br/>
- Designed to help engineers fix bugs faster by recording and replaying through different states of their applications. Debug your app more easily by “rewinding” your session instead of having to reproduce the issue until you find the problem. <br/>
+ Designed to help engineers fix bugs faster by recording and replaying through different states of their applications. Debug your app more easily by “rewinding” your session instead of having to wait to reproduce the issue once you find the problem. <br/>
 
 
 
@@ -25,21 +25,18 @@
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
-Your application must be using the hook `useReducer` for actions to be recorded.
+You must use an unminified version of React. Also, your application must be using the hook `useReducer` for actions to be recorded.
 
 ### Installing
 React Rewind will soon be available as a Chrome extension through the Google Chrome Web Store.
 
 To install locally, setup instructions are as follows:
 
-1. `git clone https://github.com/reactrewind/react-rewind.git`
-2. `cd react-rewind`
-3. `npm run install_dep`
-4. `npm run build`
-5. Visit the URL `chrome://extensions/`
-6. Click Load Unpacked button and select the folder `react-rewind/src/browser/chrome`
-7. On your application page, open the Chrome Developer tools and select `React Rewind` from the tool bar
-8. Click Record and begin interacting with your application
+1. `git clone --single-branch --branch beta-release https://github.com/reactrewind/react-rewind.git`
+2. Visit the URL `chrome://extensions/`
+3. Click Load Unpacked button and select the folder `react-rewind/chrome`
+4. On your application page, open the Chrome Developer (Ctrl + Shift + J / Mac: Cmd + Option + I) tools and select `React Rewind` from the tool bar
+5. Click Record and begin interacting with your application
 
 
 As you interact with your application, actions will populate the events panel. Click on these actions to view more details about them, such as the action object that was dispatched, the effects or state difference, and the whole state of the application after the dispatch. The time slider panel allows you to rewind, fast forward, and play through all recorded actions.
@@ -62,7 +59,7 @@ Please fork this repo.  We welcome pull requests. For suggestions or to report b
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/reactrewind/react-rewind/tags). 
 
 ## Authors
 

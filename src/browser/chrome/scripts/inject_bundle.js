@@ -1,3 +1,14 @@
+/* 
+* We export a string that is gonna get injected into a <script> tag
+* We want this to be executed in the same world as the scripts on the
+* users page.
+*
+* This bundle contains:
+* 1) ./time_travel.js
+* 2) ./linked_list.js
+* 3) lodash deepclone function
+*/
+
 module.exports =  `
 class DoublyLinkedListNode {
   constructor(value, next = null, prev = null) {

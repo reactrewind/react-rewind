@@ -9,13 +9,13 @@ export default function RightNav(props) {
     <>
       <DetailsNavWrapper>
         <Buttons>
-          <NavLink exact activeClassName='active' to='/'>
+          <NavLink exact activeClassName="active" to="/">
             <Button>actions</Button>
           </NavLink>
-          <NavLink activeClassName='active' to='/effects'>
+          <NavLink activeClassName="active" to="/effects">
             <Button>effects</Button>
           </NavLink>
-          <NavLink activeClassName='active' to='/state'>
+          <NavLink activeClassName="active" to="/state">
             <Button>state</Button>
           </NavLink>
         </Buttons>

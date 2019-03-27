@@ -120,13 +120,11 @@ let injectableCommitAllHostEffects = esprima.parseScript(
 
 // traverse ast to find method and replace body with our node's body
 function traverseTree(replacementNode, functionName, ast) {
-  console.log('unbundled traverse called');
   estraverse.replace(ast, {
     enter(node) {
       if (node.type === 'FunctionDeclaration') {
         if (node.id.name === functionName) {
           node.body = replacementNode.body[0].body;
-          console.log('From parser. REPLACING!', node.id.name);
         }
       }
     },
@@ -141,19 +139,17 @@ function traverseBundledTree(replacementNode, functionName, ast, library) {
           if (node.value.body.body[1].expression.callee.name === 'eval') {
             // create new ast 
             const reactLib = esprima.parseScript(node.value.body.body[1].expression.arguments[0].value);
-             estraverse.traverse(reactLib, {
+            estraverse.traverse(reactLib, {
               enter(libNode) {
                 if (libNode.type === 'FunctionDeclaration') {
                   if (libNode.id.name === functionName) {
                     libNode.body = replacementNode.body[0].body;
-                    console.log('From parser. REPLACING body!', libNode.id.name);
                   }
                 }
               },
             });
             node.value.body.body[1].expression.arguments[0].value = escodegen.generate(reactLib);
             node.value.body.body[1].expression.arguments[0].raw = JSON.stringify(escodegen.generate(reactLib));
-            console.log('arguments replaced');
           }
         }
       }
@@ -178,7 +174,6 @@ const parseAndGenerate = (codeString) => {
       traverseTree(injectableUseReducer, 'useReducer', ast);
     }
     const code = escodegen.generate(ast);
-    console.log('returning code.');
     return code;
   }
   return codeString;
