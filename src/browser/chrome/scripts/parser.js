@@ -41,6 +41,13 @@ function commitDeletion(nextEffect) {
 }
 
 function commitPlacement(nextEffect) {
+  if (Object.keys(funcStorage).length === 0) {
+    funcStorage.commitDeletion = commitDeletionOriginal;
+    funcStorage.commitPlacement = commitPlacementOriginal;
+    funcStorage.commitWork = commitWorkOriginal;
+    funcStorage.prepareUpdate = prepareUpdate;
+  }
+
   timeTravelLList.append({
     primaryEffectTag: 'PLACEMENT',
     effect: _.cloneDeep(nextEffect),
@@ -53,28 +60,14 @@ function commitPlacement(nextEffect) {
 const reactLibraryPath = './node_modules/react/cjs/react.development.js';
 const reactDOMLibraryPath = './node_modules/react-dom/cjs/react-dom.development.js';
 
-const funcStorageAssignments = esprima.parseScript(`
-  funcStorage.commitDeletion = commitDeletionOriginal;
-  funcStorage.commitPlacement = commitPlacementOriginal;
-  funcStorage.commitWork = commitWorkOriginal;
-  funcStorage.prepareUpdate = prepareUpdate;
-`);
-
 function traverseTree(funcReplacements, ast) {
   // traverse ast to find method, change name and insert funtion replacement
   // funcReplacements is an object of {functionName: function} pairs that must
   // be updated on the AST.
   const funcReplacementNames = Object.keys(funcReplacements);
-  let hasUpdatedFuncStorage = false;
 
   estraverse.replace(ast, {
     enter(node, parent) {
-      if (!hasUpdatedFuncStorage) {
-        hasUpdatedFuncStorage = true;
-        for (let assignement of funcStorageAssignments.body) {
-          parent.body.push(assignement);
-        }
-      }
       if (node.type === 'FunctionDeclaration' && funcReplacementNames.includes(node.id.name)) {
         parent.body.push(funcReplacements[node.id.name].body[0]);
         node.id.name += 'Original';
@@ -83,31 +76,29 @@ function traverseTree(funcReplacements, ast) {
   });
 }
 
-function traverseBundledTree(replacementNode, functionName, ast, library) {
+function traverseBundledTree(funcReplacements, ast, library) {
   estraverse.traverse(ast, {
     enter(node) {
-      if (node.key && node.key.value === library) {
-        if (node.value.body.body[1].type === 'ExpressionStatement') {
-          if (node.value.body.body[1].expression.callee.name === 'eval') {
-            // create new ast 
-            const reactLib = esprima
-              .parseScript(node.value.body.body[1].expression.arguments[0].value);
+      if (node.key && node.key.value === library && node.value.body.body[1].type === 'ExpressionStatement'
+        && node.value.body.body[1].expression.callee.name === 'eval') {
+        const funcReplacementNames = Object.keys(funcReplacements);
 
-            estraverse.traverse(reactLib, {
-              enter(libNode, parent) {
-                if (libNode.type === 'FunctionDeclaration' && libNode.id.name === functionName) {
-                  parent.body.push(replacementNode.body[0]);
-                  libNode.id.name += 'Original';
-                }
-              },
-            });
+        // create new ast 
+        const reactLib = esprima
+          .parseScript(node.value.body.body[1].expression.arguments[0].value);
 
-            node.value.body.body[1].expression.arguments[0].value = escodegen.generate(reactLib);
-            node.value.body.body[1].expression.arguments[0].raw = JSON.stringify(
-              escodegen.generate(reactLib),
-            );
-          }
-        }
+        estraverse.traverse(reactLib, {
+          enter(libNode, parent) {
+            if (libNode.type === 'FunctionDeclaration' && funcReplacementNames.includes(libNode.id.name)) {
+              parent.body.push(funcReplacements[libNode.id.name].body[0]);
+              libNode.id.name += 'Original';
+            }
+          },
+        });
+
+        node.value.body.body[1].expression.arguments[0].value = escodegen.generate(reactLib);
+        node.value.body.body[1].expression.arguments[0].raw = JSON
+          .stringify(escodegen.generate(reactLib));
       }
     },
   });
@@ -132,10 +123,10 @@ const parseAndGenerate = (codeString) => {
 
   // Webpack bundle is wrapped in function call
   if (ast.body[0].expression.type === 'CallExpression') {
-    traverseBundledTree(injectableUseReducer, 'useReducer', ast, reactLibraryPath);
-    traverseBundledTree(injectableCommitWork, 'commitWork', ast, reactDOMLibraryPath);
-    traverseBundledTree(injectableCommitDeletion, 'commitDeletion', ast, reactDOMLibraryPath);
-    traverseBundledTree(injectableCommitPlacement, 'commitPlacement', ast, reactDOMLibraryPath);
+    // TODO: better way to identify react or react-dom library. No need to
+    // traverse the AST twice.
+    traverseBundledTree({ useReducer: injectableUseReducer }, ast, reactLibraryPath);
+    traverseBundledTree(funcReplacements, ast, reactDOMLibraryPath);
   } else {
     traverseTree(funcReplacements, ast);
   }
