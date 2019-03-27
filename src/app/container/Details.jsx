@@ -22,7 +22,6 @@ export default function Details(props) {
   } = props;
 
   const [isClicked, setIsClicked] = useState(false);
-
   return (
     <Router>
       <>

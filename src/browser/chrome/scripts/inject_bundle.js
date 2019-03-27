@@ -62,16 +62,14 @@ function timeTravel(direction) {
   if (diff === 1 && timeTravelLList.current !== timeTravelLList.tail) {
     timeTravelLList.current = timeTravelLList.current.next;
   }
-
+  
   const {
     commitDeletion,
     commitPlacement,
     commitWork,
     prepareUpdate,
   } = funcStorage;
-
   while (true) {
-    // console.log('doing work for ', timeTravelTrackerIndex);
     const { primaryEffectTag, effect } = timeTravelLList.current.value;
 
     switch(primaryEffectTag) {
