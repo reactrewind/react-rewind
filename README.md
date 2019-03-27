@@ -13,7 +13,7 @@
 - Press record and start interacting with your application.
 - Each dispatched action will be stored as a unique event in time.
 - Rewind through your recorded actions with the back button or by dragging the slider.
-- Analyze the state, the effects and the action object of every disptached event.
+- Analyze the state, the effects and the action object of every dispatched event.
 - Press play and watch your app change!
 <p align="center">
   <img src ="images/BrowserPreview_tmp.gif" width="600">
