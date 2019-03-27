@@ -19,5 +19,4 @@ chrome.devtools.panels.create('React Rewind',
         if (message.action === 'refresh_devtool') windowP.postMessage(message);
       });
     });
-
   });

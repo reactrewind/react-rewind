@@ -7,7 +7,7 @@ const interceptedURLs = {};
 
 chrome.tabs.onUpdated.addListener((id, info, tab) => {
   if (tab.status !== 'complete' || tab.url.startsWith('chrome')) return;
-  console.log('refresh completed on: ', tab.url);
+
   // active page action button and inject extension.js
   chrome.pageAction.show(tab.id);
   chrome.tabs.executeScript(null, {
@@ -64,7 +64,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
   port.onMessage.addListener((msg) => {
     if (!msg.turnOnDevtool) return;
-    console.log('got turn on: ', msg);
+
     interceptedURLs[msg.url] = true;
     addScriptInterception();
 
