@@ -13,7 +13,7 @@ export const PaneWrapper = styled.div`
   font-size: .80em;
   color: #E8E8F4;
   background-color: #2A2E3A;
-  height: 100%;
+  height: calc(100vh - 46px);
   display: flex;
   justify-content: space-around;
 `;

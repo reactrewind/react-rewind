@@ -28,7 +28,7 @@ These instructions will get you a copy of the project up and running on your loc
 You must use an unminified version of React. Also, your application must be using the hook `useReducer` for actions to be recorded.
 
 ### Installing
-React Rewind will soon be available as a Chrome extension through the Google Chrome Web Store.
+You can install it from the [Chrome Web Store](https://chrome.google.com/webstore/detail/react-rewind/gaombjmfkfdcfaeehpflnkkfdbpmjohl?hl=en).
 
 To install locally, setup instructions are as follows:
 

@@ -27,7 +27,6 @@ function timeTravel(direction) {
   } = funcStorage;
 
   while (true) {
-    // console.log('doing work for ', timeTravelTrackerIndex);
     const { primaryEffectTag, effect } = timeTravelLList.current.value;
 
     switch(primaryEffectTag) {

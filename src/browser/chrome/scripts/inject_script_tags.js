@@ -1,6 +1,7 @@
 (function addListeners() {
   const scriptsToParse = [];
   let lastReceivedMsgTime = null;
+
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.codeString) scheduleWork(msg);
   });
