@@ -57,5 +57,4 @@ export const Button = styled.div`
   color: white;
   cursor: pointer;
   font-family: 'arial';
-
 `;
