@@ -7,7 +7,6 @@ configure({ adapter: new Adapter() });
 
 describe('<TimeSlider />', () => {
   const wrapper = shallow(<TimeSlider data={10} />);
-
   it('Should render 1 <input />', () => {
     expect(wrapper.find('input')).toHaveLength(1);
   });

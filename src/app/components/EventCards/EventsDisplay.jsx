@@ -6,7 +6,7 @@ import EventCreator from './EventCreator.jsx';
 // styled components import
 import { EventsWrapper } from '../../styles/Events.jsx';
 
-export default function Events(props) {
+export default function EventsDisplay(props) {
   const {
     activeEventId,
     filteredData,
