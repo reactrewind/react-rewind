@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "Time-travel debugger for React useReducer",
   "main": "index.js",
+  "jest": {
+    "verbose": true
+  },
   "scripts": {
     "start": "nodemon server/server.js",
+    "test": "jest",
     "start:dev": "webpack-dev-server --mode development --open --hot",
     "build": "webpack --watch",
     "webpack": "webpack"
